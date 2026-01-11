@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Integrux Solutions - Painel Financeiro</title>
+    <title>Capitalis Solution - Painel Financeiro</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <script>
-        // Verificação inicial de sessão
         try {
-            if(!sessionStorage.getItem('integrux_session')) {
+            if(!sessionStorage.getItem('capitalis_session')) {
                 window.location.replace('redir.html'); 
             }
         } catch(e) {
@@ -51,7 +50,7 @@
 
         aside { width: 260px; background-color: var(--bg-panel); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 25px 15px 15px 15px; padding-top: 40px; position: fixed; height: 100vh; z-index: 100; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 35px; padding-left: 10px; cursor: pointer; }
-        .brand-text { font-size: 1.3rem; font-weight: 800; letter-spacing: 1.5px; color: var(--text-main); font-family: 'Inter', sans-serif; }
+        .brand-text { font-size: 1.2rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text-main); font-family: 'Inter', sans-serif; }
         .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 5px; }
         .nav-item { padding: 10px 14px; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 0.9rem; }
         .nav-item:hover { background: var(--nav-hover); color: var(--text-main); }
@@ -208,7 +207,7 @@
 
         .invest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .cofrinho-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
-        .cofrinho-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--invest-gold); }
+        .cofrinho-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;}
         .cofrinho-icon { width: 70px; height: 70px; background: rgba(255, 215, 0, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; color: var(--invest-gold); font-size: 2rem; }
         .cofrinho-val { font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono'; color: var(--invest-gold); margin: 5px 0; }
         .cofrinho-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
@@ -446,38 +445,100 @@
         }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
-        /* LOCK SCREEN STYLES */
         #adLockOverlay {
-            position: fixed; inset: 0; background: #050505; z-index: 99999;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
+            position: fixed; inset: 0; 
+            background: radial-gradient(circle at 50% 0%, #1c2128 0%, #050505 85%);
+            z-index: 99999;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
         }
-        .lock-icon { font-size: 3rem; color: var(--warning); margin-bottom: 20px; }
-        .lock-timer-bar { width: 100%; max-width: 300px; height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin-top: 20px; display:none; }
-        .lock-timer-fill { height: 100%; width: 0%; background: var(--primary); transition: width 1s linear; }
+
+        .lock-glass-card {
+            background: rgba(13, 17, 23, 0.7); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(47, 129, 247, 0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(47, 129, 247, 0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: floatUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes floatUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .lock-icon { 
+            font-size: 3.5rem; 
+            margin-bottom: 20px; 
+            background: rgba(47, 129, 247, 0.1);
+            width: 80px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            border: 1px solid rgba(47, 129, 247, 0.2);
+        }
+
+        .lock-timer-bar { 
+            width: 100%; height: 6px; 
+            background: rgba(255,255,255,0.05); 
+            border-radius: 10px; 
+            overflow: hidden; 
+            margin-top: 25px; 
+            display:none; 
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .lock-timer-fill { 
+            height: 100%; width: 0%; 
+            background: linear-gradient(90deg, var(--primary), #60a5fa); 
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 1s linear; 
+        }
+
         .access-timer-badge {
-            background: rgba(35, 134, 54, 0.2); color: var(--success);
-            border: 1px solid var(--success); padding: 4px 10px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 5px;
+            background: rgba(35, 134, 54, 0.15); color: var(--success);
+            border: 1px solid rgba(35, 134, 54, 0.3); padding: 5px 12px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
     </style>
 </head>
 <body>
     
     <div id="adLockOverlay">
-        <div class="lock-icon"><i class="bi bi-lock-fill"></i></div>
-        <h2 style="margin-bottom: 10px;">Acesso Expirado</h2>
-        <p style="color: var(--text-muted); max-width: 300px; margin-bottom: 30px;">
-            Gostou do nosso produto? Apoie-nos e assista um anúncio de 30 segundos para ter <strong>24 horas</strong> de acesso total ao aplicativo.
-        </p>
-        <button id="btnWatchAd" class="btn btn-primary" style="padding: 12px 30px; font-size: 1rem;" onclick="AdSystem.watchAd()">
-            <i class="bi bi-play-circle-fill"></i> Assistir anúncio (30s)
-        </button>
-        <div class="lock-timer-bar" id="adProgressBar">
-            <div class="lock-timer-fill" id="adProgressFill"></div>
+        <div class="lock-glass-card">
+            <div class="lock-icon">
+                <i class="bi bi-rocket-takeoff-fill"></i>
+            </div>
+            
+            <h2 style="margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px;">Liberar acesso</h2>
+            
+            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 30px; max-width: 280px;">
+                Mantenha seu controle em dia. Apoie o projeto e garanta <strong>12 horas de acesso ilimitado</strong> a todas as ferramentas.
+            </p>
+            
+            <button id="btnWatchAd" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 1rem; border-radius: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(47, 129, 247, 0.3);" onclick="AdSystem.watchAd()">
+                <i class="bi bi-play-circle-fill"></i> Assistir (30s)
+            </button>
+            
+            <div class="lock-timer-bar" id="adProgressBar">
+                <div class="lock-timer-fill" id="adProgressFill"></div>
+            </div>
+            
+            <p id="adStatusText" style="margin-top: 15px; font-size: 0.8rem; color: var(--text-muted); display: none; font-family: 'JetBrains Mono';">
+                <span class="ptr-spinning" style="display:inline-block; margin-right:5px;">⏳</span> Conectando...
+            </p>
+            
+            <button class="btn" style="margin-top: 20px; background: transparent; color: var(--text-muted); border: none; font-size: 0.85rem; padding: 5px;" onclick="window.location.replace('redir.html')">
+                Voltar depois
+            </button>
         </div>
-        <p id="adStatusText" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); display: none;">Exibindo anúncio...</p>
-        <button class="btn" style="margin-top: 20px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);" onclick="window.location.replace('redir.html')">Sair do aplicativo</button>
     </div>
 
     <div id="tutorialBubble">
@@ -491,7 +552,7 @@
 
     <aside id="mainSidebar">
         <div class="brand">
-            <span class="brand-text">INTEGRUX</span>
+            <span class="brand-text">CAPITALIS <span style="color: var(--primary); font-weight: 300;">SOLUTION</span></span>
         </div>
         <nav class="nav-menu">
             <div class="nav-item active" onclick="switchView('finance', this)"><i class="bi bi-cash-coin"></i>Gestão de gastos</div>
@@ -984,32 +1045,81 @@
             </div>
         </div>
     </div>
+    <div class="modal-overlay" id="termsModal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 600px; height: 85vh;">
+            <div class="modal-header">
+                <h3><i class="bi bi-file-text"></i> Termos de Uso e Privacidade</h3>
+                </div>
+            <div class="modal-body" style="padding: 0; display: flex; flex-direction: column; height: 100%;">
+                
+                <div style="flex: 1; overflow-y: auto; padding: 25px; line-height: 1.6; color: var(--text-main);">
+                    
+                    <div style="background: rgba(47, 129, 247, 0.1); border: 1px solid var(--primary); border-radius: 12px; padding: 15px; margin-bottom: 25px;">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">Resumo simples (para todas as idades)</h4>
+                        <p style="font-size: 0.9rem; margin-bottom: 0;">
+                            Imagine que o <strong>Capitalis</strong> é um caderno de anotações dentro do seu bolso. 
+                            Tudo o que você registra, ou adiciona aqui <strong>fica apenas no seu celular</strong>. 
+                            Nós (os criadores) não conseguimos ver, ler, nem vender seus dados, porque eles nunca saem do seu aparelho.
+                            <br><br>
+                            <strong>Importante:</strong> Como só fica no seu celular, se você perder o aparelho ou apagar o aplicativo sem fazer um "Backup" (cópia de segurança), você perde suas anotações. Cuide bem dos seus dados!
+                        </p>
+                    </div>
 
-    <div id="adLockOverlay">
-        <div class="lock-icon"><i class="bi bi-lock-fill"></i></div>
-        <h2 style="margin-bottom: 10px;">Acesso expirado</h2>
-        <p style="color: var(--text-muted); max-width: 300px; margin-bottom: 30px;">
-            Seu tempo de uso gratuito acabou. Assista a um breve anúncio para liberar mais <strong>24 horas</strong> de acesso total ao nosso sistema.
-        </p>
-        <button id="btnWatchAd" class="btn btn-primary" style="padding: 12px 30px; font-size: 1rem;" onclick="AdSystem.watchAd()">
-            <i class="bi bi-play-circle-fill"></i> Assistir anúncio
-        </button>
-        <div class="lock-timer-bar" id="adProgressBar">
-            <div class="lock-timer-fill" id="adProgressFill"></div>
+                    <h4 style="margin-bottom: 15px;">TERMOS DE USO E POLÍTICA DE PRIVACIDADE</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">
+                        <strong>Aplicativo:</strong> Capitalis Solution<br>
+                        <strong>Desenvolvedores:</strong> Algarte e Daniel<br>
+                        <strong>Versão dos Termos:</strong> Janeiro/2026
+                    </p>
+
+                    <h5 style="color: var(--text-main); margin-top: 20px;">1. PRIVACIDADE E DADOS (OFFLINE-FIRST)</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        O Capitalis opera sob a política "Offline-First". Isso significa que não possuímos servidores de banco de dados para armazenar informações dos usuários. Todos os registros financeiros, metas e configurações são salvos exclusivamente na memória local (Storage) do dispositivo do usuário. A empresa não tem acesso, em hipótese alguma, aos dados inseridos.
+                    </p>
+
+                    <h5 style="color: var(--text-main); margin-top: 20px;">2. RESPONSABILIDADE DO USUÁRIO (BACKUPS)</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        É de inteira responsabilidade do USUÁRIO a preservação de seus dados. O aplicativo oferece a ferramenta de "Backup JSON" na aba de Logs. O USUÁRIO deve realizar exportações periódicas. Os desenvolvedores não se responsabilizam por perdas de dados decorrentes de: perda/roubo do aparelho, limpeza de cache do navegador/sistema, desinstalação do app ou formatação do dispositivo.
+                    </p>
+
+                    <h5 style="color: var(--text-main); margin-top: 20px;">3. ISENÇÃO DE RESPONSABILIDADE FINANCEIRA</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        O Capitalis é uma ferramenta de organização e simulação. Os cálculos de investimentos e juros são estimativas baseadas em dados inseridos pelo usuário e índices de mercado padrão (ex: 0.8% a.m ou 10% a.a). Não garantimos rentabilidade real e não nos responsabilizamos por decisões financeiras tomadas com base no aplicativo.
+                    </p>
+
+                    <h5 style="color: var(--text-main); margin-top: 20px;">4. MODELO DE ACESSO</h5>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        O aplicativo é disponibilizado gratuitamente através de um sistema patrocinado. Para manter a infraestrutura e desenvolvimento, o usuário concorda em assistir a breves anúncios publicitários em troca de períodos de acesso liberado (ex: 12 horas).
+                    </p>
+
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 30px 0;">
+                    <p style="font-size: 0.8rem; text-align: center; color: var(--text-muted);">
+                        Ao clicar em "Li e Concordo", você declara estar ciente de que seus dados são de sua exclusiva responsabilidade.
+                    </p>
+                </div>
+
+                <div style="padding: 20px; border-top: 1px solid var(--border-color); background: var(--bg-card);">
+                    <button class="btn btn-success" style="width: 100%; padding: 15px; font-size: 1rem;" onclick="Tutorial.acceptTerms()">
+                        <i class="bi bi-shield-check-fill"></i> LI E CONCORDO COM OS TERMOS
+                    </button>
+                </div>
+            </div>
         </div>
-        <p id="adStatusText" style="margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); display: none;">Exibindo anúncio...</p>
-        <button class="btn" style="margin-top: 20px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);" onclick="window.location.replace('redir.html')">Sair do sistema</button>
     </div>
-
 <script src="js/financeiro.js"></script>
         <script>
         const APP_VERSION = 'v3.4';
-const StorageManager = {
+    
+    const StorageManager = {
         getPrefix: () => {
             try {
-                const session = JSON.parse(sessionStorage.getItem('integrux_session'));
-                if (session && session.email) return `user_${session.email.replace(/[^a-zA-Z0-9]/g, '')}_`;
-                if (session && session.name) return `user_${session.name.split(' ')[0].toLowerCase()}_`;
+                const session = JSON.parse(sessionStorage.getItem('capitalis_session'));
+                if (session && session.email && session.email.includes('@')) {
+                    return `user_${session.email.replace(/[^a-zA-Z0-9]/g, '')}_`;
+                }
+                if (session && session.name) {
+                    return `user_${session.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()}_`;
+                }
                 return 'user_guest_';
             } catch (e) {
                 return 'user_guest_';
@@ -1017,7 +1127,7 @@ const StorageManager = {
         },
         save: (key, data) => {
             try {
-                const globalKeys = ['integrux_theme']; 
+                const globalKeys = ['capitalis_theme']; 
                 
                 if (globalKeys.includes(key)) {
                     localStorage.setItem(key, typeof data === 'string' ? data : JSON.stringify(data));
@@ -1031,7 +1141,7 @@ const StorageManager = {
         },
         load: (key) => {
             try {
-                const globalKeys = ['integrux_theme'];
+                const globalKeys = ['capitalis_theme'];
                 let finalKey = key;
                 
                 if (!globalKeys.includes(key)) {
@@ -1062,7 +1172,7 @@ const StorageManager = {
         },
         autoLock: () => {
             let timer; const logoutTime = 600000;
-            const resetTimer = () => { clearTimeout(timer); timer = setTimeout(() => { alert("Sessão expirada por segurança."); sessionStorage.removeItem('integrux_session'); window.location.replace('redir.html'); }, logoutTime); };
+            const resetTimer = () => { clearTimeout(timer); timer = setTimeout(() => { alert("Sessão expirada por segurança."); sessionStorage.removeItem('capitalis_session'); window.location.replace('redir.html'); }, logoutTime); };
             window.onload = resetTimer; document.onmousemove = resetTimer; document.onkeypress = resetTimer; document.ontouchstart = resetTimer; 
         }
     };
@@ -1070,7 +1180,7 @@ const StorageManager = {
     const AdSystem = {
         checkAccess: () => {
             if(document.body.classList.contains('tutorial-active')) return;
-            const expiry = StorageManager.load('integrux_access_expiry'); 
+            const expiry = StorageManager.load('capitalis_access_expiry'); 
             const now = Date.now();
             
             if (!expiry || now > parseInt(expiry)) {
@@ -1117,9 +1227,10 @@ const StorageManager = {
             }, 100); 
         },
         grantAccess: () => {
-            const tomorrow = Date.now() + 86400000; 
-            StorageManager.save('integrux_access_expiry', tomorrow);
-            alert("Obrigado! Acesso liberado por 24 horas.");
+            const accessTime = 43200000; 
+            const expiry = Date.now() + accessTime; 
+            StorageManager.save('capitalis_access_expiry', expiry);
+            alert("Sucesso! Acesso total liberado por 12 horas. Aproveite! ;)");
             location.reload(); 
         },
         startTimer: (expiryTime) => {
@@ -1191,11 +1302,10 @@ const StorageManager = {
             mainContent.style.transform = ''; ptrLoader.style.top = '-60px'; 
         } 
     });
-
     const Tutorial = {
         currentStep: 0,
         init: () => {
-            if (StorageManager.load('integrux_tutorial_version') !== APP_VERSION) {
+            if (StorageManager.load('capitalis_tutorial_version') !== APP_VERSION) {
                 document.body.classList.add('tutorial-active');
                 document.getElementById('tutorialBubble').style.display = 'flex';
                 Tutorial.showStep(0);
@@ -1206,20 +1316,20 @@ const StorageManager = {
         showStep: (stepIndex) => {
             Tutorial.currentStep = stepIndex;
             const container = document.getElementById('tutorialContent');
-            const session = JSON.parse(sessionStorage.getItem('integrux_session')) || {name: 'Usuário'};
+            const session = JSON.parse(sessionStorage.getItem('capitalis_session')) || {name: 'Usuário'};
             const userName = session.name.split(' ')[0];
             let html = ''; let viewToSwitch = '';
             
             switch(stepIndex) {
                 case 0: 
-                    html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Integrux</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>, seja bem-vindo ao painel financeiro da Integrux. Vamos fazer um tour pelo aplicativo?</p>`; 
+                    html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>, seja bem-vindo ao painel financeiro da Capitalis Solution. Vamos fazer um tour pelo aplicativo?</p>`; 
                     break;
                 case 1: viewToSwitch = 'finance'; html = `<div class="tutorial-header"><h2><i class="bi bi-cash-coin"></i> Gestão de Gastos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Nessa aba você poderá controlar seus gastos, extratos completos de despesas e muito mais!</p>`; break;
                 case 2: viewToSwitch = 'income'; html = `<div class="tutorial-header"><h2><i class="bi bi-graph-up-arrow"></i> Minha Renda</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Você pode adicionar novas rendas, e acompanhar tanto por gráfico.</p>`; break;
                 case 3: viewToSwitch = 'invest'; html = `<div class="tutorial-header"><h2><i class="bi bi-rocket-takeoff"></i> Investimentos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Acesse o painel de Investimentos para monitorar sua carteira de ativos e reservas financeiras.</p>`; break;
                 case 4: viewToSwitch = 'assets'; html = `<div class="tutorial-header"><h2><i class="bi bi-bank"></i> Patrimônio</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Em Patrimônio, você tem a visão global de bens duráveis e o controle de empréstimos ativos.</p>`; break;
                 case 5: viewToSwitch = 'strategy'; html = `<div class="tutorial-header"><h2><i class="bi bi-clipboard-data"></i> Estratégia</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Defina metas de sobra mensal e organize a prioridade de pagamentos.</p>`; break;
-                case 6: viewToSwitch = 'tools'; html = `<div class="tutorial-header"><h2><i class="bi bi-terminal"></i> Terminal Integrux</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Interaja com o Assistente Virtual para automação de processos financeiros.</p>`; break;
+                case 6: viewToSwitch = 'tools'; html = `<div class="tutorial-header"><h2><i class="bi bi-terminal"></i> Terminal Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Interaja com o Assistente Virtual para automação de processos financeiros.</p>`; break;
                 case 7: 
                     viewToSwitch = 'logs'; 
                     html = `<div class="tutorial-header"><h2 style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill"></i> ATENÇÃO MÁXIMA</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
@@ -1229,31 +1339,42 @@ const StorageManager = {
                     É de sua TOTAL RESPONSABILIDADE realizar backups regulares (Botão "Backup JSON"). Se você limpar o cache do navegador ou perder o dispositivo sem ter o arquivo de backup, SEUS DADOS SERÃO PERDIDOS PARA SEMPRE.</p>`; 
                     break;
                 case 8: 
-                    html = `<div class="tutorial-header"><h2><i class="bi bi-shield-check"></i> Inicialização</h2></div><p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Ao finalizar, você confirma que leu o aviso de segurança e que o sistema está configurado para seu uso pessoal.</p><div style="font-size:0.75rem; text-align:center; opacity:0.7;">© 2025 Integrux Solutions.</div>`; 
+                    html = `<div class="tutorial-header"><h2><i class="bi bi-shield-check"></i> Finalização</h2></div>
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">Para começar a usar o Capitalis com segurança, por favor leia nossos Termos de Uso e Política de Privacidade.</p>
+                                        <div style="font-size:0.75rem; text-align:center; opacity:0.7; margin-bottom: 10px;"></div>`; 
                     break;
             }
             if(viewToSwitch) { switchView(viewToSwitch); }
             let dots = '<div class="step-dots">'; for(let i=0; i<=8; i++) dots += `<div class="step-dot ${i === stepIndex ? 'active' : ''}"></div>`; dots += '</div>';
-            let btn = stepIndex === 8 ? `<button class="btn btn-success" style="width:100%; margin-top:10px;" onclick="Tutorial.finish()">Li e Concordo</button>` : `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="flex:1; background:rgba(255,255,255,0.1);" onclick="Tutorial.skip()">Pular</button><button class="btn btn-primary" style="flex:1" onclick="Tutorial.showStep(${stepIndex + 1})">Próximo</button></div>`;
+            
+            let btn = stepIndex === 8 
+                ? `<button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="Tutorial.openTerms()">Ler Termos de Uso</button>` 
+                : `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="flex:1; background:rgba(255,255,255,0.1);" onclick="Tutorial.skip()">Pular</button><button class="btn btn-primary" style="flex:1" onclick="Tutorial.showStep(${stepIndex + 1})">Próximo</button></div>`;
+            
             container.innerHTML = html + dots + btn;
         },
         skip: () => { 
-            if(confirm("Você tem certeza que deseja pular o tutorial? Caso selecione 'SIM', você concorda com os termos de política e de usuário!")) Tutorial.finish(); 
+            if(confirm("Ao pular o tutorial, você declara que LEU e CONCORDA automaticamente com os Termos de Uso e Política de Privacidade do Capitalis.\n\nDeseja continuar?")) Tutorial.acceptTerms(); 
+        },
+        openTerms: () => {
+            document.getElementById('termsModal').style.display = 'flex';
+        },
+        acceptTerms: () => {
+            document.getElementById('termsModal').style.display = 'none';
+            Tutorial.finish();
         },
         finish: () => { 
-            StorageManager.save('integrux_tutorial_version', APP_VERSION); 
+            StorageManager.save('capitalis_tutorial_version', APP_VERSION); 
             document.getElementById('tutorialBubble').style.display = 'none'; 
             document.body.classList.remove('tutorial-active');
             switchView('finance', document.querySelector(`.nav-item[onclick*="'finance'"]`)); 
-            
             AdSystem.checkAccess();
         }
     };
-
     const Invest = {
-        getData: () => StorageManager.load('integrux_investments') || [],
+        getData: () => StorageManager.load('capitalis_investments') || [],
         getReserve: () => {
-            const data = StorageManager.load('integrux_reserve');
+            const data = StorageManager.load('capitalis_reserve');
             if(!data) return { type: 'single', items: [{ inst: 'Não definido', val: 0 }] };
             if(Array.isArray(data.items)) return data; 
             return { type: 'single', items: [{ institution: data.institution || 'Não definido', val: data.value || 0 }] };
@@ -1299,7 +1420,7 @@ const StorageManager = {
                 const val = parseMoneyInput(document.getElementById('resValue').value);
                 dataToSave = { type: 'single', items: [{ inst, val, obj: 'Geral' }] };
             }
-            StorageManager.save('integrux_reserve', dataToSave);
+            StorageManager.save('capitalis_reserve', dataToSave);
             closeModal('reserveModal'); Invest.render();
         },
         openReserveModal: () => {
@@ -1316,7 +1437,7 @@ const StorageManager = {
             }
             document.getElementById('reserveModal').style.display = 'flex';
         },
-        save: (data) => { StorageManager.save('integrux_investments', data); Invest.render(); },
+        save: (data) => { StorageManager.save('capitalis_investments', data); Invest.render(); },
         
         add: () => {
             const name = document.getElementById('invName').value;
@@ -1397,17 +1518,17 @@ const StorageManager = {
     };
 
     const Logger = {
-        getLogs: () => StorageManager.load('integrux_logs') || [],
-        log: (action, desc) => { const session = JSON.parse(sessionStorage.getItem('integrux_session')) || { name: 'Desconhecido' }; const now = new Date(); const logs = Logger.getLogs(); logs.unshift({ id: Date.now(), time: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR'), user: session.name, action, desc }); if(logs.length > 500) logs.pop(); StorageManager.save('integrux_logs', logs); if(document.getElementById('view-logs').classList.contains('active-view')) renderLogs(); },
-        clear: () => { if(confirm('Apagar logs?')) { StorageManager.save('integrux_logs', []); renderLogs(); } },
-        export: () => { const logs = Logger.getLogs(); if(logs.length === 0) return alert('Sem logs.'); const blob = new Blob([logs.map(l => `[${l.time}] ${l.user} - ${l.action}: ${l.desc}`).join('\n')], { type: 'text/plain' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `Integrux_Logs.txt`; a.click(); }
+        getLogs: () => StorageManager.load('capitalis_logs') || [],
+        log: (action, desc) => { const session = JSON.parse(sessionStorage.getItem('capitalis_session')) || { name: 'Desconhecido' }; const now = new Date(); const logs = Logger.getLogs(); logs.unshift({ id: Date.now(), time: now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR'), user: session.name, action, desc }); if(logs.length > 500) logs.pop(); StorageManager.save('capitalis_logs', logs); if(document.getElementById('view-logs').classList.contains('active-view')) renderLogs(); },
+        clear: () => { if(confirm('Apagar logs?')) { StorageManager.save('capitalis_logs', []); renderLogs(); } },
+        export: () => { const logs = Logger.getLogs(); if(logs.length === 0) return alert('Sem logs.'); const blob = new Blob([logs.map(l => `[${l.time}] ${l.user} - ${l.action}: ${l.desc}`).join('\n')], { type: 'text/plain' }); const a = document.createElement('a'); a.href = window.URL.createObjectURL(blob); a.download = `Capitalis_Logs.txt`; a.click(); }
     };
 
     const Assets = {
         currentAssetId: null,
-        getData: () => StorageManager.load('integrux_assets_v2') || [],
-        getBigGoals: () => StorageManager.load('integrux_big_goals') || [],
-        save: (data) => { StorageManager.save('integrux_assets_v2', data); Assets.render(); },
+        getData: () => StorageManager.load('capitalis_assets_v2') || [],
+        getBigGoals: () => StorageManager.load('capitalis_big_goals') || [],
+        save: (data) => { StorageManager.save('capitalis_assets_v2', data); Assets.render(); },
         render: () => {
             const data = Assets.getData(); 
             const container = document.getElementById('assetsContainer'); 
@@ -1522,7 +1643,7 @@ const StorageManager = {
                 } else {
                     const incData = Income.getData();
                     incData.push({ id: Date.now(), date: new Date().toISOString().slice(0,10), company: `Venda: ${asset.name}`, role: 'Parcela', type: 'Venda', gross: asset.value, net: asset.value, status: 'Pago' });
-                    StorageManager.save('integrux_income', incData);
+                    StorageManager.save('capitalis_income', incData);
                     Finance.add(`Recebimento: ${asset.name}`, asset.value, 'Renda');
                 }
                 alert('Registrado com sucesso! Valor atualizado no saldo.');
@@ -1542,7 +1663,7 @@ const StorageManager = {
                 const goal = goals.find(g => g.id === id); 
                 if(goal) { 
                     goal.current += val; 
-                    StorageManager.save('integrux_big_goals', goals); 
+                    StorageManager.save('capitalis_big_goals', goals); 
                     Finance.add(`Aporte: ${goal.name}`, val * -1, 'Gastos por Fora'); 
                     Assets.render(); 
                 } 
@@ -1550,7 +1671,7 @@ const StorageManager = {
         },
         deleteBigGoal: (id) => { 
             if(confirm('Deseja excluir essa meta?')) { 
-                StorageManager.save('integrux_big_goals', Assets.getBigGoals().filter(g => g.id !== id)); 
+                StorageManager.save('capitalis_big_goals', Assets.getBigGoals().filter(g => g.id !== id)); 
                 Assets.render(); 
             } 
         }
@@ -1565,31 +1686,31 @@ const StorageManager = {
         if(!name || total <= 0) return alert('Preencha o nome e o valor da meta.'); 
         const goals = Assets.getBigGoals(); 
         goals.push({ id: Date.now(), name, total, current }); 
-        StorageManager.save('integrux_big_goals', goals); 
+        StorageManager.save('capitalis_big_goals', goals); 
         closeModal('bigGoalModal'); 
         Assets.render(); 
     }
 
     const Strategy = {
-        getGoal: () => StorageManager.load('integrux_goal') ? parseFloat(StorageManager.load('integrux_goal')) : 0,
+        getGoal: () => StorageManager.load('capitalis_goal') ? parseFloat(StorageManager.load('capitalis_goal')) : 0,
         setGoal: () => { 
             const currentVal = Strategy.getGoal();
             const newVal = prompt("1. Qual o valor da sua meta de sobra? (R$)", currentVal > 0 ? currentVal : ''); 
             if(newVal && !isNaN(parseFloat(newVal))) { 
-                const currentDesc = StorageManager.load('integrux_goal_desc') || '';
+                const currentDesc = StorageManager.load('capitalis_goal_desc') || '';
                 const newDesc = prompt("2. Digite aqui quais são seus objetivos com essa meta.", currentDesc);
-                StorageManager.save('integrux_goal', parseFloat(newVal)); 
-                StorageManager.save('integrux_goal_desc', newDesc ? newDesc : '');
+                StorageManager.save('capitalis_goal', parseFloat(newVal)); 
+                StorageManager.save('capitalis_goal_desc', newDesc ? newDesc : '');
                 renderStrategy(); 
             } 
         }
     };
 
     const Debts = {
-        tempId: null, getData: () => StorageManager.load('integrux_debts') || [], getDismissed: () => JSON.parse(sessionStorage.getItem('integrux_dismissed')) || [],
+        tempId: null, getData: () => StorageManager.load('capitalis_debts') || [], getDismissed: () => JSON.parse(sessionStorage.getItem('capitalis_dismissed')) || [],
         add: (name, amount, type, dueDay, installments, installmentValue = 0) => {
             const safeName = Security.sanitize(name); const list = Debts.getData(); if(list.find(d => d.name.toLowerCase() === safeName.toLowerCase())) return alert('Já existe uma conta com esse ID!');
-            list.push({ id: Date.now(), name: safeName, amount: parseMoneyInput(amount), type, dueDay: parseInt(dueDay), installments, installmentValue: parseMoneyInput(installmentValue), lastPaid: null }); StorageManager.save('integrux_debts', list); renderStrategy(); Assets.render(); closeModal('debtModal'); Logger.log('Nova Conta', `${safeName} (${type})`); return true;
+            list.push({ id: Date.now(), name: safeName, amount: parseMoneyInput(amount), type, dueDay: parseInt(dueDay), installments, installmentValue: parseMoneyInput(installmentValue), lastPaid: null }); StorageManager.save('capitalis_debts', list); renderStrategy(); Assets.render(); closeModal('debtModal'); Logger.log('Nova Conta', `${safeName} (${type})`); return true;
         },
         pay: (id) => { 
             const list = Debts.getData();
@@ -1606,13 +1727,13 @@ const StorageManager = {
                         item.installments.current = parseInt(item.installments.current) + 1;
                         if(item.installments.current > item.installments.total) { alert('Parabéns! Empréstimo quitado.'); }
                     }
-                    StorageManager.save('integrux_debts', list);
+                    StorageManager.save('capitalis_debts', list);
                     renderStrategy(); Assets.render(); 
                     if(typeof renderFinance === 'function') renderFinance();
                 }
             }
         },
-        remove: (id) => { if(confirm('Deseja excluir a conta sem finalizar o pagamento?')) { StorageManager.save('integrux_debts', Debts.getData().filter(i => i.id !== id)); renderStrategy(); Assets.render(); closeModal('actionModal'); closeModal('notifModal'); Debts.checkNotifications(); } },
+        remove: (id) => { if(confirm('Deseja excluir a conta sem finalizar o pagamento?')) { StorageManager.save('capitalis_debts', Debts.getData().filter(i => i.id !== id)); renderStrategy(); Assets.render(); closeModal('actionModal'); closeModal('notifModal'); Debts.checkNotifications(); } },
         checkNotifications: () => {
             const list = Debts.getData(); const dismissed = Debts.getDismissed(); const today = new Date().getDate(); const currentMonth = new Date().toISOString().slice(0, 7);
             const urgent = list.filter(d => d.type === 'essential' && (d.dueDay - today <= 5) && d.amount > 0 && d.lastPaid !== currentMonth && !dismissed.includes(d.id));
@@ -1621,14 +1742,14 @@ const StorageManager = {
             else { badge.classList.remove('active'); badge.innerText = ''; content.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted)">Tudo tranquilo!</div>'; }
         },
         openAction: (id, name) => { Debts.tempId = parseInt(id); document.getElementById('actionTitle').innerText = name; closeModal('notifModal'); document.getElementById('actionModal').style.display = 'flex'; },
-        markAsRead: () => { if(!Debts.tempId) return; const list = Debts.getDismissed(); list.push(Debts.tempId); sessionStorage.setItem('integrux_dismissed', JSON.stringify(list)); closeModal('actionModal'); Debts.checkNotifications(); },
+        markAsRead: () => { if(!Debts.tempId) return; const list = Debts.getDismissed(); list.push(Debts.tempId); sessionStorage.setItem('capitalis_dismissed', JSON.stringify(list)); closeModal('actionModal'); Debts.checkNotifications(); },
         deleteFromAction: () => { if(Debts.tempId) Debts.remove(Debts.tempId); }
     };
 
     const Assistant = {
         state: 'IDLE', tempData: {},
         getLiquidBalance: () => {
-            const fixedSalary = parseFloat(StorageManager.load('integrux_fixed_salary') || 0);
+            const fixedSalary = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
             const transactions = Finance.getData();
             const currentMonth = new Date().toISOString().slice(0, 7);
             const monthTrans = transactions.filter(t => t.date.startsWith(currentMonth));
@@ -1643,15 +1764,15 @@ const StorageManager = {
             const input = document.getElementById('cmdInput'); const term = document.getElementById('assistTerminal');
             const newInp = input.cloneNode(true); input.parentNode.replaceChild(newInp, input);
             newInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const val = Security.sanitize(newInp.value); newInp.value = ''; if (val.trim()) Assistant.processInput(val); } });
-            term.innerHTML = ''; Assistant.print('<em>Iniciando central de comandos Integrux...</em>', 'sys');
-            const session = JSON.parse(sessionStorage.getItem('integrux_session')); const name = session ? session.name.split(' ')[0] : 'Usuário';
+            term.innerHTML = ''; Assistant.print('<em>Iniciando central de comandos Capitalis...</em>', 'sys');
+            const session = JSON.parse(sessionStorage.getItem('capitalis_session')); const name = session ? session.name.split(' ')[0] : 'Usuário';
             setTimeout(() => { Assistant.print(`Olá, <strong>${name}</strong>.`, 'success'); Assistant.showMainMenu(); }, 600);
         },
         showMainMenu: () => {
             const liquid = Assistant.getLiquidBalance(); const color = liquid >= 0 ? '#4caf50' : '#f44336';
             let msg = `Saldo em Conta: <strong style="color:${color}">R$ ${liquid.toLocaleString('pt-BR')}</strong>.<br>`;
             if (liquid <= 0) msg += `<span style="font-size:0.8rem; color:#ff9800;">Atenção: você está sem saldo, clique no botão abaixo para adicionar um salário ou renda extra!</span><br>`;
-            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Integrux, em que posso te ajudar? (selecione as opções)`;
+            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Capitalis, em que posso te ajudar? (selecione as opções)`;
             Assistant.print(msg, 'sys');
             Assistant.appendActions([ { text: '💸 Pagar Conta', action: "pagar" }, { text: '📈 Investir', action: "investir" }, { text: '💰 Salário/Renda', action: "salario" }, { text: '🧾 Nova Despesa', action: "add_conta" }, { text: '🗑️ Limpar Chat', action: "clear_chat" } ]);
             Assistant.state = 'IDLE';
@@ -1671,7 +1792,7 @@ const StorageManager = {
             let msg = '';
             if(isSimulation) { msg = `<strong>Simulação de Salário</strong><br>`; } 
             else {
-                StorageManager.save('integrux_fixed_salary', result.liquido);
+                StorageManager.save('capitalis_fixed_salary', result.liquido);
                 msg = `<strong>Salário fixo mensal registrado com sucesso!</strong><br>`;
                 result.transacoes.forEach(t => {
                     let finalVal = t.valor;
@@ -1686,7 +1807,7 @@ const StorageManager = {
                         }
                     }
                 });
-                StorageManager.save('integrux_debts', allDebts);
+                StorageManager.save('capitalis_debts', allDebts);
                 Assets.render();
             }
             msg += `<small>Bruto: R$ ${result.bruto.toLocaleString('pt-BR')} | INSS: -R$ ${result.inss.toLocaleString('pt-BR')}</small><br>`;
@@ -1731,7 +1852,7 @@ const StorageManager = {
                     return Assistant.print(`Saldo livre: <strong>R$ ${liquid.toLocaleString('pt-BR')}</strong>. Quanto você deseja investir?`);
                 }
                 if (lower === 'salario') {
-                    const currentFixed = parseFloat(StorageManager.load('integrux_fixed_salary') || 0);
+                    const currentFixed = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
                     Assistant.print(`Salário fixo atual: <strong>R$ ${currentFixed.toLocaleString('pt-BR')}</strong>.`);
                     Assistant.print('O que deseja fazer?', 'sys');
                     Assistant.appendActions([ { text: '🧮 Simular Bruto (Temporário)', action: 'simular_salario' }, { text: '💾 Definir Novo Salário Fixo', action: 'definir_fixo' }, { text: '➕ Renda Extra', action: 'add_renda_extra' } ]);
@@ -1789,7 +1910,7 @@ const StorageManager = {
                         Finance.add(`Pagamento: ${target.name}`, target.amount * -1, target.type === 'essential' ? 'Contas' : 'Dívida');
                         target.lastPaid = new Date().toISOString().slice(0, 7);
                         if(target.type === 'loan' && target.installments) target.installments.current++;
-                        StorageManager.save('integrux_debts', debts);
+                        StorageManager.save('capitalis_debts', debts);
                         if(typeof renderStrategy === 'function') renderStrategy(); Assets.render();
                         Assistant.print(`<strong>${target.name}</strong> pago!`, 'success'); Assistant.showMainMenu();
                     }
@@ -1830,7 +1951,7 @@ const StorageManager = {
                         if (reserveData.type === 'single' && reserveData.items[0].inst === 'Não definido') { reserveData.items[0].inst = institution; reserveData.items[0].val += amount; } 
                         else { reserveData.type = 'multi'; reserveData.items.push({ inst: institution, val: amount, obj: 'Via assistente' }); }
                     }
-                    StorageManager.save('integrux_reserve', reserveData);
+                    StorageManager.save('capitalis_reserve', reserveData);
                 } else {
                     logName = `${type} - ${institution}`;
                     const invList = Invest.getData();
@@ -1885,18 +2006,68 @@ const StorageManager = {
     };
 
     const System = {
-        backup: () => { const backup = { income: StorageManager.load('integrux_income'), finance: StorageManager.load('integrux_finance'), logs: StorageManager.load('integrux_logs'), assets: StorageManager.load('integrux_assets_v2'), debts: StorageManager.load('integrux_debts'), bigGoals: StorageManager.load('integrux_big_goals'), goal: StorageManager.load('integrux_goal'), fixo: StorageManager.load('integrux_fixed_salary'), investments: StorageManager.load('integrux_investments') }; const a = document.createElement('a'); a.href = window.URL.createObjectURL(new Blob([JSON.stringify(backup)], { type: 'application/json' })); a.download = `Integrux_Backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); },
-        restore: (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if(data.income) StorageManager.save('integrux_income', data.income); if(data.finance) StorageManager.save('integrux_finance', data.finance); if(data.logs) StorageManager.save('integrux_logs', data.logs); if(data.assets) StorageManager.save('integrux_assets_v2', data.assets); if(data.debts) StorageManager.save('integrux_debts', data.debts); if(data.bigGoals) StorageManager.save('integrux_big_goals', data.bigGoals); if(data.goal) StorageManager.save('integrux_goal', data.goal); if(data.fixo) StorageManager.save('integrux_fixed_salary', data.fixo); if(data.investments) StorageManager.save('integrux_investments', data.investments); alert('Restaurado!'); location.reload(); } catch(err) { alert('Erro no arquivo.'); } }; reader.readAsText(file); },
-        openReset: () => { document.getElementById('resetModal').style.display = 'flex'; const btn = document.getElementById('btnConfirmReset'); btn.disabled = true; btn.style.opacity = '0.5'; let sec = 5; const timer = setInterval(() => { sec--; if(sec <= 0) { clearInterval(timer); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = 'SIM, RESETAR TUDO'; } else btn.innerText = `Aguarde ${sec}s...`; }, 1000); },
+        backup: () => { 
+            const backup = { 
+                income: StorageManager.load('capitalis_income'), 
+                finance: StorageManager.load('capitalis_finance'), 
+                logs: StorageManager.load('capitalis_logs'), 
+                assets: StorageManager.load('capitalis_assets_v2'), 
+                debts: StorageManager.load('capitalis_debts'), 
+                bigGoals: StorageManager.load('capitalis_big_goals'), 
+                goal: StorageManager.load('capitalis_goal'), 
+                fixo: StorageManager.load('capitalis_fixed_salary'), 
+                investments: StorageManager.load('capitalis_investments') 
+            }; 
+            const a = document.createElement('a'); 
+            a.href = window.URL.createObjectURL(new Blob([JSON.stringify(backup)], { type: 'application/json' })); 
+            a.download = `Capitalis_Backup_${new Date().toISOString().slice(0,10)}.json`; 
+            a.click(); 
+        },
+        restore: (input) => { 
+            const file = input.files[0]; if(!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                try { 
+                    const data = JSON.parse(e.target.result); 
+                    if(data.income) StorageManager.save('capitalis_income', data.income); 
+                    if(data.finance) StorageManager.save('capitalis_finance', data.finance); 
+                    if(data.logs) StorageManager.save('capitalis_logs', data.logs); 
+                    if(data.assets) StorageManager.save('capitalis_assets_v2', data.assets); 
+                    if(data.debts) StorageManager.save('capitalis_debts', data.debts); 
+                    if(data.bigGoals) StorageManager.save('capitalis_big_goals', data.bigGoals); 
+                    if(data.goal) StorageManager.save('capitalis_goal', data.goal); 
+                    if(data.fixo) StorageManager.save('capitalis_fixed_salary', data.fixo); 
+                    if(data.investments) StorageManager.save('capitalis_investments', data.investments); 
+                    alert('Restaurado com sucesso!'); 
+                    location.reload(); 
+                } catch(err) { alert('Erro no arquivo de backup.'); } 
+            }; 
+            reader.readAsText(file); 
+        },
+        openReset: () => { 
+            document.getElementById('resetModal').style.display = 'flex'; 
+            const btn = document.getElementById('btnConfirmReset'); 
+            btn.disabled = true; 
+            btn.style.opacity = '0.5'; 
+            let sec = 5; 
+            const timer = setInterval(() => { 
+                sec--; 
+                if(sec <= 0) { 
+                    clearInterval(timer); 
+                    btn.disabled = false; 
+                    btn.style.opacity = '1'; 
+                    btn.innerText = 'SIM, APAGAR MINHA CONTA'; 
+                } else btn.innerText = `Aguarde ${sec}s...`; 
+            }, 1000); 
+        },
         confirmReset: () => { 
             const keysToRemove = StorageManager.getUserKeys();
-            if(keysToRemove.length === 0) {
-                 alert('Nada para resetar neste usuário.');
-                 return;
+            if (keysToRemove.length > 0) {
+                keysToRemove.forEach(k => localStorage.removeItem(k));
             }
-            keysToRemove.forEach(k => localStorage.removeItem(k));
-            alert('Dados deste usuário apagados com sucesso! O sistema reiniciará.');
-            location.reload(); 
+            sessionStorage.removeItem('capitalis_session');
+            alert('Sua conta foi apagada com sucesso.');
+            window.location.replace('redir.html'); 
         }
     };
 
@@ -1939,14 +2110,14 @@ const StorageManager = {
     }
 
     const Income = {
-        getData: () => StorageManager.load('integrux_income') || [],
-        save: () => { const date = document.getElementById('incDate').value; const company = Security.sanitize(document.getElementById('incCompany').value); const role = Security.sanitize(document.getElementById('incRole').value); const grossInput = document.getElementById('incGross').value; const netInput = document.getElementById('incNet').value; const status = document.getElementById('incStatus').value; if (!date || !grossInput) return alert('Preencha os dados.'); Logger.log('Nova Renda', `${company} - R$ ${netInput}`); const data = Income.getData(); data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); StorageManager.save('integrux_income', data); renderIncome(); closeModal('incomeModal'); },
-        remove: (id) => { if(confirm('Deseja excluir?')) { StorageManager.save('integrux_income', Income.getData().filter(i => i.id !== id)); renderIncome(); } },
-        markAsPaid: (id) => { if(confirm('Confirmar recebimento de nova renda?')) { const data = Income.getData(); const item = data.find(i => i.id === id); if(item) { item.status = 'Pago'; StorageManager.save('integrux_income', data); renderIncome(); } } }
+        getData: () => StorageManager.load('capitalis_income') || [],
+        save: () => { const date = document.getElementById('incDate').value; const company = Security.sanitize(document.getElementById('incCompany').value); const role = Security.sanitize(document.getElementById('incRole').value); const grossInput = document.getElementById('incGross').value; const netInput = document.getElementById('incNet').value; const status = document.getElementById('incStatus').value; if (!date || !grossInput) return alert('Preencha os dados.'); Logger.log('Nova Renda', `${company} - R$ ${netInput}`); const data = Income.getData(); data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); StorageManager.save('capitalis_income', data); renderIncome(); closeModal('incomeModal'); },
+        remove: (id) => { if(confirm('Deseja excluir?')) { StorageManager.save('capitalis_income', Income.getData().filter(i => i.id !== id)); renderIncome(); } },
+        markAsPaid: (id) => { if(confirm('Confirmar recebimento de nova renda?')) { const data = Income.getData(); const item = data.find(i => i.id === id); if(item) { item.status = 'Pago'; StorageManager.save('capitalis_income', data); renderIncome(); } } }
     };
 
     const Finance = {
-        getData: () => StorageManager.load('integrux_finance') || [],
+        getData: () => StorageManager.load('capitalis_finance') || [],
         add: (desc, amountInput, cat) => {
             let val = 0; if (typeof amountInput === 'number') val = amountInput; else val = parseMoneyInput(amountInput);
             if (!desc || val === 0) return alert('Valor ou descrição inválidos.');
@@ -1956,18 +2127,18 @@ const StorageManager = {
             const currentFilter = document.getElementById('filterMonth') ? document.getElementById('filterMonth').value : null;
             if (currentFilter) { const now = new Date(); const [fYear, fMonth] = currentFilter.split('-'); if (now.getMonth() + 1 != fMonth || now.getFullYear() != fYear) { saveDate = `${currentFilter}-01`; } }
             const data = Finance.getData(); data.unshift({ id: Date.now(), date: saveDate, desc: Security.sanitize(desc), amount: val, cat: cat });
-            StorageManager.save('integrux_finance', data);
+            StorageManager.save('capitalis_finance', data);
             if (typeof renderFinance === 'function') renderFinance(); if (typeof closeModal === 'function') closeModal('transactionModal'); if (typeof renderStrategy === 'function') renderStrategy();
             Logger.log('Financeiro', `Adicionado: ${desc} (${val.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})})`);
         },
         remove: (id) => {
             const data = Finance.getData(); const target = data.find(i => i.id === id);
             if (target) {
-                const newData = data.filter(i => i.id !== id); StorageManager.save('integrux_finance', newData);
+                const newData = data.filter(i => i.id !== id); StorageManager.save('capitalis_finance', newData);
                 if (target.desc.startsWith('Pagamento:')) {
                     const debtName = target.desc.replace('Pagamento: ', '').trim();
                     const debts = Debts.getData(); const d = debts.find(x => x.name === debtName);
-                    if(d) { d.lastPaid = null; StorageManager.save('integrux_debts', debts); }
+                    if(d) { d.lastPaid = null; StorageManager.save('capitalis_debts', debts); }
                 }
                 if (typeof renderFinance === 'function') renderFinance(); if (typeof renderStrategy === 'function') renderStrategy();
                 const reportModal = document.getElementById('reportModal'); if (reportModal && reportModal.style.display === 'flex' && typeof openMonthlyReport === 'function') { openMonthlyReport(); }
@@ -1998,11 +2169,11 @@ const StorageManager = {
         document.getElementById('pctEssencial').innerText = `${pEss.toFixed(0)}% (R$ ${essential.toLocaleString('pt-BR')})`; document.getElementById('barEssencial').style.width = `${pEss}%`;
         document.getElementById('pctEstilo').innerText = `${pLif.toFixed(0)}% (R$ ${lifestyle.toLocaleString('pt-BR')})`; document.getElementById('barEstilo').style.width = `${pLif}%`;
         document.getElementById('pctDividas').innerText = `${pDeb.toFixed(0)}% (R$ ${debt.toLocaleString('pt-BR')})`; document.getElementById('barDividas').style.width = `${pDeb}%`;
-        const goal = Strategy.getGoal(); const goalDesc = StorageManager.load('integrux_goal_desc');
+        const goal = Strategy.getGoal(); const goalDesc = StorageManager.load('capitalis_goal_desc');
         let projectedIncome = 0;
         const incomeTransactions = list.filter(i => i.date.startsWith(currentMonthStr) && i.amount > 0);
         if (incomeTransactions.length > 0) { projectedIncome = incomeTransactions.reduce((acc, i) => acc + i.amount, 0); } 
-        else { projectedIncome = parseFloat(StorageManager.load('integrux_fixed_salary') || 0); }
+        else { projectedIncome = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0); }
         const currentBalance = projectedIncome - total;
         document.getElementById('goalTarget').innerText = goal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'}); 
         const btnText = document.getElementById('goalBtnText');
@@ -2067,7 +2238,7 @@ const StorageManager = {
     function openAddIncome() { document.getElementById('incDate').value = new Date().toISOString().slice(0,10); document.getElementById('incomeModal').style.display = 'flex'; }
     function openAddDebt() { document.getElementById('debtModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function logout() { if(confirm('Sair?')) { sessionStorage.removeItem('integrux_session'); window.location.href = 'index.html'; } }
+    function logout() { if(confirm('Deseja sair?')) { sessionStorage.removeItem('capitalis_session'); window.location.href = 'index.html'; } }
     function saveTransaction() { 
         const desc = document.getElementById('tDesc').value; 
         let val = parseMoneyInput(document.getElementById('tAmount').value); 
@@ -2084,12 +2255,12 @@ const StorageManager = {
 
     window.addEventListener("beforeunload", () => StorageManager.emergencySave());
     window.onload = function() {
-        const session = JSON.parse(sessionStorage.getItem('integrux_session'));
+        const session = JSON.parse(sessionStorage.getItem('capitalis_session'));
         if(session) { document.getElementById('userNameDisplay').innerText = session.name; document.getElementById('userAvatarLetter').innerText = session.initial; }
         document.body.classList.add('privacy-mode');
         const toggleBtn = document.getElementById('themeToggle'); const privacyBtn = document.getElementById('privacyToggle');
-        if (StorageManager.load('integrux_theme') === 'light') document.body.classList.add('light-mode');
-        toggleBtn.addEventListener('click', () => { document.body.classList.toggle('light-mode'); StorageManager.save('integrux_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); });
+        if (StorageManager.load('capitalis_theme') === 'light') document.body.classList.add('light-mode');
+        toggleBtn.addEventListener('click', () => { document.body.classList.toggle('light-mode'); StorageManager.save('capitalis_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); });
         privacyBtn.addEventListener('click', () => { document.body.classList.toggle('privacy-mode'); });
         document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
         
@@ -2103,6 +2274,6 @@ const StorageManager = {
             AdSystem.checkAccess();
         }
     };
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>
