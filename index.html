@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
+        /* --- VARIÁVEIS GLOBAIS --- */
         :root {
             --bg-dark: #050505; 
             --primary: #2F81F7; 
@@ -22,6 +23,8 @@
             --shadow-color: rgba(0, 0, 0, 0.7);
             --bg-card: #0d1117;
             --border-color: #30363d;
+            
+            /* Footer Ultra Premium */
             --glass-footer: rgba(5, 5, 5, 0.4); 
             --glass-footer-border: rgba(255, 255, 255, 0.06);
         }
@@ -43,6 +46,8 @@
             --glass-footer: rgba(255, 255, 255, 0.5);
             --glass-footer-border: rgba(0, 0, 0, 0.05);
         }
+
+        /* --- RESET BÁSICO --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         html, body { 
@@ -65,6 +70,8 @@
         }
         
         body.light-mode { background: var(--bg-dark); }
+        
+        /* --- ANIMAÇÃO DE FUNDO --- */
         body::before { 
             content: ''; position: absolute; width: 600px; height: 600px; 
             background: radial-gradient(circle, rgba(0, 102, 255, 0.1), transparent 70%); 
@@ -82,13 +89,15 @@
         body.light-mode::before, body.light-mode::after { opacity: 0; }
         
         @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+        
+        /* --- CONTAINER LOGIN --- */
         .container { 
             position: relative; z-index: 10; width: 100%; max-width: 1000px; 
             display: flex; box-shadow: 0 25px 50px -12px var(--shadow-color); 
             border-radius: 24px; border: 1px solid var(--glass-border); 
             backdrop-filter: blur(20px); background: var(--glass); 
             overflow: hidden; min-height: 600px; transition: all 0.5s ease; 
-            margin-bottom: 90px;
+            margin-bottom: 90px; /* Espaço para o footer */
         }
         
         body.light-mode .container { box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-color: transparent; }
@@ -137,6 +146,7 @@
             padding: 15px 50px;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 20; font-size: 0.85rem; color: var(--text-muted);
+
             background: var(--glass-footer); 
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border-top: 1px solid var(--glass-footer-border);
@@ -235,9 +245,10 @@
             
             .main-footer {
                 flex-direction: column; padding: 25px 20px; gap: 15px;
-                background: rgba(5, 5, 5, 0.98); 
+                background: rgba(5, 5, 5, 0.98);
             }
             body.light-mode .main-footer { background: rgba(255, 255, 255, 0.98); }
+
             .footer-left { order: 1; width: 100%; justify-content: center; margin-bottom: 5px; } 
             .footer-center { order: 2; width: 100%; justify-content: center; flex-direction: column; gap: 5px; } 
             .footer-right { order: 3; width: 100%; justify-content: center; gap: 20px; margin-top: 5px; }
@@ -316,7 +327,7 @@
             <a href="https://integrux.dev/" target="_blank" class="integrux-badge">
                 Desenvolvido por <strong>Integrux</strong>
             </a>
-            <span class="version-badge" onclick="showVersionInfo()" title="Versão Atual">v1.0</span>
+            <span class="version-badge" onclick="showVersionInfo()" title="Versão Atual">v3.5</span>
         </div>
 
         <div class="footer-right">
@@ -337,22 +348,28 @@
             </div>
             <div class="modal-content-scroll">
                 <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
-                    Valorizamos sua experiência. Utilize este canal para enviar sugestões, reclamações ou solicitar suporte técnico diretamente à nossa equipe de desenvolvimento.
+                    Sempre trabalhando em possíveis atualizações, você pode nos ajudar com sua sugestão?
                 </p>
                 
+                <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Seu nome (obrigatório)</label>
+                <input type="text" id="ouvName" class="select-dark" placeholder="Como podemos te chamar?">
+
+                <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Contato (e-mail ou whatsApp)</label>
+                <input type="text" id="ouvContact" class="select-dark" placeholder="Para retornarmos sua solicitação (opcional)">
+
                 <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Tipo de solicitação</label>
                 <select id="ouvType" class="select-dark">
                     <option value="Sugestão">💡 Sugestão de melhoria</option>
-                    <option value="Reclamação">⚠️ Reclamação / Reportar Erro</option>
+                    <option value="Reclamação">⚠️ Reclamação / Reportar erro</option>
                     <option value="Suporte">🔧 Suporte técnico</option>
                     <option value="Comercial">💼 Contato comercial</option>
                 </select>
 
-                <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Sua Mensagem</label>
+                <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Sua mensagem</label>
                 <textarea id="ouvMsg" class="text-area-dark" placeholder="Descreva aqui com detalhes..."></textarea>
 
                 <button class="btn-submit" onclick="sendOuvidoria()">
-                    <i class="bi bi-envelope-paper-fill" style="margin-right: 8px;"></i> Desejo enviar o e-mail para os desenvolvedores
+                    <i class="bi bi-send-fill" style="margin-right: 8px;"></i> Clique aqui para enviar para os desenvolvedores
                 </button>
             </div>
         </div>
@@ -382,7 +399,7 @@
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">
                     <strong>Aplicativo:</strong> Capitalis Solution<br>
                     <strong>Desenvolvedores:</strong> Algarte e Daniel<br>
-                    <strong>Versão dos termos:</strong> Janeiro/2026
+                    <strong>Versão dos Termos:</strong> Janeiro/2026
                 </p>
                 <h5 style="color: var(--text-main); margin-top: 20px;">1. PRIVACIDADE E DADOS (OFFLINE-FIRST)</h5>
                 <p style="font-size: 0.9rem; color: var(--text-muted);">
@@ -432,22 +449,70 @@
         function openOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.add('active'); }
         function closeOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.remove('active'); }
 
-        function showVersionInfo() { showToast("Versão 1.0.0 - Seu sistema está na versão mais recente disponível!", false); }
-
+        function showVersionInfo() { showToast("Versão 3.5 - Sistema Atualizado", false); }
         function sendOuvidoria() {
+            const name = document.getElementById('ouvName').value.trim();
+            const contact = document.getElementById('ouvContact').value.trim();
             const type = document.getElementById('ouvType').value;
-            const msg = document.getElementById('ouvMsg').value;
-            
-            if(!msg.trim()) return showToast("Por favor, descreva sua solicitação.", true);
+            const msgInput = document.getElementById('ouvMsg');
+            const msg = msgInput.value.trim();
+            const btn = document.querySelector('#ouvidoriaModal .btn-submit');
+            if(!name) return showToast("Por favor, digite seu nome.", true);
+            if(!msg) return showToast("Por favor, descreva sua solicitação.", true);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+            const emailDestino = "capitalissolution@gmail.com";
 
-            const subject = `[Ouvidoria Capitalis] - ${type}`;
-            const body = encodeURIComponent(`Olá Equipe Integrux,\n\nEstou entrando em contato via aplicativo Capitalis.\n\nTipo: ${type}\n\nMensagem:\n${msg}\n\n---\nEnviado via App Web`);
-
-            window.location.href = `mailto:contato@integrux.dev?subject=${subject}&body=${body}`;
-            
-            closeOuvidoriaModal();
-            showToast("Redirecionando para seu aplicativo de e-mail...", false);
-            document.getElementById('ouvMsg').value = ''; 
+            fetch(`https://formsubmit.co/ajax/${emailDestino}`, {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _subject: `Capitalis [${type}] - De: ${name}`,
+                    _template: 'table',
+                    _replyto: contact || "", 
+                    nome_remetente: name,
+                    contato_remetente: contact || "Não informado",
+                    tipo_solicitacao: type,
+                    mensagem: msg,
+                    data_envio: new Date().toLocaleString()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeOuvidoriaModal();
+                showToast("Mensagem enviada com sucesso! Em breve retornaremos.", false);
+                msgInput.value = ''; 
+                document.getElementById('ouvName').value = '';
+                document.getElementById('ouvContact').value = '';
+            })
+            .catch(error => {
+                console.log("Erro no envio automático, usando método manual...", error);
+                
+                const subject = `[Capitalis - ${type}] Nova solicitação de ${name}`;
+                const body = encodeURIComponent(
+                    `Olá Equipe Capitalis,\n\n` +
+                    `Sou ${name}.\n` +
+                    `Contato: ${contact || "Não informado"}\n\n` +
+                    `Tipo: ${type}\n` +
+                    `Mensagem:\n${msg}\n\n` +
+                    `---\nEnviado via App Web (Tela de Login)`
+                );
+                window.location.href = `mailto:${emailDestino}?subject=${subject}&body=${body}`;
+                
+                closeOuvidoriaModal();
+                showToast("Redirecionando para seu app de e-mail...", false);
+                msgInput.value = '';
+            })
+            .finally(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            });
         }
         function hashPassword(pwd) { return btoa(pwd.split('').reverse().join('') + 'CAPITALIS_SALT_V2'); } 
         
