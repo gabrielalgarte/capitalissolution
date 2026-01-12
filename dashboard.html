@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Capitalis Solution - Painel Financeiro</title>
+    <title>Capitalis Solution - única solução, para gerenciar todo seu patrimônio!</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -893,7 +893,7 @@
                 <div class="goal-header-row">
                     <div class="goal-title">
                         <span style="width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);"></span>
-                        Meta de sobra (Caixa)
+                        Meta de sobra (caixa)
                     </div>
                     <button class="btn-edit-goal" onclick="Strategy.setGoal()" title="Alterar Meta">
                         <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
@@ -931,7 +931,7 @@
             </div>
             
             <div class="card card-strategy" style="margin-top: 30px;">
-                <div class="card-label">Análise de Distribuição (50/30/20)</div>
+                <div class="card-label">Análise de distribuição (50/30/20)</div>
                 <div style="margin-top: 20px;">
                     <div class="rule-legend"><span class="legend-item"><div class="legend-dot" style="background:var(--success)"></div>Essencial (50%)</span><span id="pctEssencial">0%</span></div>
                     <div class="rule-bar"><div class="rule-segment" id="barEssencial" style="background:var(--success); width:0%"></div></div>
@@ -1265,7 +1265,7 @@
             <div class="modal-body">
                 <p style="text-align: center; color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
                     A <strong>Capitalis Solution</strong> agradece imensamente por você utilizar nosso aplicativo!<br><br>
-                    Estamos sempre buscando evoluir. Você poderia nos dizer se há algo que possamos melhorar ou o que está achando da experiência?
+                    Ajude-nos a melhorar. Seus dados são opcionais.
                 </p>
 
                 <div class="rating-box">
@@ -1278,6 +1278,8 @@
                     </div>
 
                     <div id="feedbackComment" class="feedback-input-area">
+                        <input type="text" id="feedbackName" class="input-dark" placeholder="Seu Nome (Opcional)" style="margin-bottom: 10px;">
+                        <input type="email" id="feedbackEmail" class="input-dark" placeholder="Seu E-mail (Opcional)" style="margin-bottom: 10px;">
                         <textarea id="feedbackText" class="feedback-textarea" rows="3" placeholder="Escreva sua sugestão, elogio ou crítica aqui..."></textarea>
                         <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="Feedback.send()">Enviar Feedback</button>
                     </div>
@@ -1378,43 +1380,41 @@
         init: () => {
             document.getElementById('appVersionDisplay').innerText = APP_VERSION;
             const lastSeenVersion = StorageManager.load('capitalis_last_version');
-            const tutorialDone = StorageManager.load('capitalis_tutorial_version');
-            Updates.renderList();
-            if (tutorialDone && lastSeenVersion !== APP_VERSION) {
-                setTimeout(() => {
-                    document.getElementById('updatesModal').style.display = 'flex';
-                    StorageManager.save('capitalis_last_version', APP_VERSION);
-                }, 1000);
-            } else if (!lastSeenVersion) {
-                StorageManager.save('capitalis_last_version', APP_VERSION);
+            if (!document.body.classList.contains('tutorial-active')) {
+                 Updates.renderList();
+                 if (lastSeenVersion !== APP_VERSION) {
+                    setTimeout(() => {
+                        document.getElementById('updatesModal').style.display = 'flex';
+                        StorageManager.save('capitalis_last_version', APP_VERSION);
+                    }, 1500);
+                 }
             }
         },
-
         renderList: () => {
             const container = document.getElementById('updatesTimeline');
+            if(!container) return;
             container.innerHTML = '';
-
-            CHANGELOG.forEach((log, index) => {
-                const isLatest = index === 0;
-                
-                let html = `
-                <div class="timeline-item ${isLatest ? 'latest' : ''}">
-                    <div class="timeline-dot"></div>
-                    <div class="version-title">
-                        ${log.version} 
-                        ${isLatest ? '<span class="badge-new">NOVO</span>' : ''}
-                    </div>
-                    <span class="version-date">${log.date} - ${log.title}</span>
-                    <div class="version-desc">
-                        <ul>
-                            ${log.items.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>`;
-                container.innerHTML += html;
-            });
+            if(typeof CHANGELOG !== 'undefined') {
+                CHANGELOG.forEach((log, index) => {
+                    const isLatest = index === 0;
+                    let html = `
+                    <div class="timeline-item ${isLatest ? 'latest' : ''}">
+                        <div class="timeline-dot"></div>
+                        <div class="version-title">
+                            ${log.version} 
+                            ${isLatest ? '<span class="badge-new">NOVO</span>' : ''}
+                        </div>
+                        <span class="version-date">${log.date} - ${log.title}</span>
+                        <div class="version-desc">
+                            <ul>
+                                ${log.items.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>`;
+                    container.innerHTML += html;
+                });
+            }
         },
-
         openHistory: () => {
             document.getElementById('updatesModal').style.display = 'flex';
         }
@@ -1422,9 +1422,11 @@
         const Feedback = {
         trackAction: () => {
             if(StorageManager.load('has_rated') === 'true') return;
+            
             let count = parseInt(StorageManager.load('action_counter') || 0);
             count++;
             StorageManager.save('action_counter', count);
+            
             if(count === 3) {
                 setTimeout(() => {
                     document.getElementById('feedbackModal').style.display = 'flex';
@@ -1439,15 +1441,43 @@
         send: () => {
             const starEl = document.querySelector('input[name="rating"]:checked');
             if(!starEl) return alert("Por favor, selecione as estrelas primeiro!");
-            
+
             const stars = starEl.value;
             const text = document.getElementById('feedbackText').value;
-            
-            Logger.log('Avaliação', `⭐ ${stars} Estrelas - Msg: ${text}`);
-            
-            alert('Recebemos seu feedback. A equipe Capitalis agradece!');
-            StorageManager.save('has_rated', 'true'); 
-            closeModal('feedbackModal');
+            const name = document.getElementById('feedbackName').value || "Anônimo";
+            const email = document.getElementById('feedbackEmail').value || "Não informado";
+            Logger.log('Avaliação', `⭐ ${stars} - ${name}`);
+
+            const btn = document.querySelector('#feedbackComment button');
+            const originalText = btn.innerText;
+            btn.innerText = "Enviando...";
+            btn.disabled = true;
+            fetch("https://formsubmit.co/ajax/capitalissolution@gmail.com", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    Assunto: "Nova Avaliação Capitalis",
+                    Estrelas: stars,
+                    Nome: name,
+                    Email: email,
+                    Mensagem: text,
+                    _template: "table" 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Recebemos seu feedback com sucesso! A equipe Capitalis agradece.');
+                StorageManager.save('has_rated', 'true'); 
+                closeModal('feedbackModal');
+            })
+            .catch(error => {
+                alert('Houve um erro ao enviar. Tente novamente.');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
         },
 
         later: () => {
@@ -1479,7 +1509,7 @@
         },
         save: (key, data) => {
             try {
-                const globalKeys = ['capitalis_theme']; 
+                const globalKeys = ['capitalis_theme', 'capitalis_last_version']; 
                 
                 if (globalKeys.includes(key)) {
                     localStorage.setItem(key, typeof data === 'string' ? data : JSON.stringify(data));
@@ -1493,9 +1523,9 @@
         },
         load: (key) => {
             try {
-                const globalKeys = ['capitalis_theme'];
+                const globalKeys = ['capitalis_theme', 'capitalis_last_version'];
                 let finalKey = key;
-                
+
                 if (!globalKeys.includes(key)) {
                     finalKey = StorageManager.getPrefix() + key;
                 }
@@ -1516,7 +1546,6 @@
             return keys;
         }
     };
-
     const Security = {
         sanitize: (str) => {
             if (typeof str !== 'string') return str;
@@ -1530,23 +1559,36 @@
     };
 
     const AdSystem = {
-        checkAccess: () => {
-            if(document.body.classList.contains('tutorial-active')) return;
+        initTimer: () => {
             const expiry = StorageManager.load('capitalis_access_expiry'); 
             const now = Date.now();
-            
-            if (!expiry || now > parseInt(expiry)) {
-                AdSystem.lockScreen();
-            } else {
-                AdSystem.unlockScreen();
+            if (expiry && now < parseInt(expiry)) {
                 AdSystem.startTimer(parseInt(expiry));
+            } else {
+                document.getElementById('timeRemaining').innerText = "Expirado";
+                const badge = document.getElementById('freeTimerBadge');
+                if(badge) {
+                    badge.style.borderColor = 'var(--text-muted)';
+                    badge.style.color = 'var(--text-muted)';
+                }
             }
         },
+        validateAction: () => {
+            const expiry = StorageManager.load('capitalis_access_expiry');
+            const now = Date.now();
+            if (!expiry || now > parseInt(expiry)) {
+                AdSystem.lockScreen(); 
+                return false;
+            }
+            return true;
+        },
         lockScreen: () => {
+            const title = document.querySelector('#adLockOverlay h2');
+            const desc = document.querySelector('#adLockOverlay p');
+            if(title) title.innerText = "Ação Bloqueada";
+            if(desc) desc.innerHTML = "Para salvar novos registros e usar o assistente, você precisa de tempo ativo.<br>Assista a um breve anúncio para liberar <strong>12 horas de uso ilimitado</strong>.";
+
             document.getElementById('adLockOverlay').style.display = 'flex';
-            document.getElementById('timeRemaining').innerText = "Expirado";
-            document.getElementById('freeTimerBadge').style.borderColor = 'var(--danger)';
-            document.getElementById('freeTimerBadge').style.color = 'var(--danger)';
         },
         unlockScreen: () => {
             document.getElementById('adLockOverlay').style.display = 'none';
@@ -1579,37 +1621,45 @@
             }, 100); 
         },
         grantAccess: () => {
-            const accessTime = 43200000; 
+            const accessTime = 43200000;
             const expiry = Date.now() + accessTime; 
             StorageManager.save('capitalis_access_expiry', expiry);
-            alert("Sucesso! Acesso total liberado por 12 horas. Aproveite! ;)");
+            alert("Parabéns! 12 horas liberadas. Pode repetir sua ação agora.");
             location.reload(); 
         },
         startTimer: (expiryTime) => {
             const el = document.getElementById('timeRemaining');
             const badge = document.getElementById('freeTimerBadge');
-            
-            setInterval(() => {
+
+            if(window.adTimerInterval) clearInterval(window.adTimerInterval);
+
+            window.adTimerInterval = setInterval(() => {
                 const now = Date.now();
                 const diff = expiryTime - now;
-                
+
                 if (diff <= 0) {
-                    el.innerText = "00:00";
-                    AdSystem.checkAccess(); 
+                    el.innerText = "Expirado";
+                    if(badge) {
+                        badge.style.borderColor = 'var(--danger)';
+                        badge.style.color = 'var(--danger)';
+                    }
+                    clearInterval(window.adTimerInterval);
                     return;
                 }
 
                 const hours = Math.floor(diff / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                
+
                 el.innerText = `${hours}h ${minutes}m`;
-                
-                if(hours < 1) {
-                    badge.style.borderColor = 'var(--warning)';
-                    badge.style.color = 'var(--warning)';
-                } else {
-                    badge.style.borderColor = 'var(--success)';
-                    badge.style.color = 'var(--success)';
+
+                if(badge) {
+                    if(hours < 1) {
+                        badge.style.borderColor = 'var(--warning)';
+                        badge.style.color = 'var(--warning)';
+                    } else {
+                        badge.style.borderColor = 'var(--success)';
+                        badge.style.color = 'var(--success)';
+                    }
                 }
             }, 1000); 
         }
@@ -1668,6 +1718,7 @@
             if (StorageManager.load('capitalis_tutorial_version') !== APP_VERSION) {
                 document.body.classList.add('tutorial-active');
                 document.getElementById('tutorialBubble').style.display = 'flex';
+                document.getElementById('adLockOverlay').style.display = 'none';
                 Tutorial.showStep(0);
                 return true; 
             }
@@ -1679,7 +1730,7 @@
             const session = JSON.parse(sessionStorage.getItem('capitalis_session')) || {name: 'Usuário'};
             const userName = session.name.split(' ')[0];
             let html = ''; let viewToSwitch = '';
-            
+
             switch(stepIndex) {
                 case 0: 
                     html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>, seja bem-vindo ao painel financeiro da Capitalis Solution. Vamos fazer um tour pelo aplicativo?</p>`; 
@@ -1701,20 +1752,22 @@
                 case 8: 
                     html = `<div class="tutorial-header"><h2><i class="bi bi-shield-check"></i> Finalização</h2></div>
                     <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">Para começar a usar o Capitalis com segurança, por favor leia nossos Termos de Uso e Política de Privacidade.</p>
-                                        <div style="font-size:0.75rem; text-align:center; opacity:0.7; margin-bottom: 10px;"></div>`; 
+                    <div style="font-size:0.75rem; text-align:center; opacity:0.7; margin-bottom: 10px;"></div>`; 
                     break;
             }
             if(viewToSwitch) { switchView(viewToSwitch); }
             let dots = '<div class="step-dots">'; for(let i=0; i<=8; i++) dots += `<div class="step-dot ${i === stepIndex ? 'active' : ''}"></div>`; dots += '</div>';
-            
+
             let btn = stepIndex === 8 
                 ? `<button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="Tutorial.openTerms()">Ler Termos de Uso</button>` 
                 : `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="flex:1; background:rgba(255,255,255,0.1);" onclick="Tutorial.skip()">Pular</button><button class="btn btn-primary" style="flex:1" onclick="Tutorial.showStep(${stepIndex + 1})">Próximo</button></div>`;
-            
+
             container.innerHTML = html + dots + btn;
         },
         skip: () => { 
-            if(confirm("Ao pular o tutorial, você declara que LEU e CONCORDA automaticamente com os Termos de Uso e Política de Privacidade do Capitalis.\n\nDeseja continuar?")) Tutorial.acceptTerms(); 
+            if(confirm("Ao pular o tutorial, você declara que LEU e CONCORDA automaticamente com os Termos de Uso e Política de Privacidade do Capitalis.\n\nDeseja continuar?")) {
+                Tutorial.acceptTerms(); 
+            }
         },
         openTerms: () => {
             document.getElementById('termsModal').style.display = 'flex';
@@ -1729,9 +1782,10 @@
             document.body.classList.remove('tutorial-active');
             switchView('finance', document.querySelector(`.nav-item[onclick*="'finance'"]`)); 
             AdSystem.checkAccess();
+            Updates.init();
         }
     };
-    const Invest = {
+   const Invest = {
         getData: () => StorageManager.load('capitalis_investments') || [],
         getReserve: () => {
             const data = StorageManager.load('capitalis_reserve');
@@ -1798,21 +1852,27 @@
             document.getElementById('reserveModal').style.display = 'flex';
         },
         save: (data) => { StorageManager.save('capitalis_investments', data); Invest.render(); },
-        
         add: () => {
+            if(!AdSystem.validateAction()) return;
+
             const name = document.getElementById('invName').value;
             const type = document.getElementById('invType').value;
             const amount = parseMoneyInput(document.getElementById('invAmount').value);
+            
             if(!name || amount <= 0) return alert('Inválido.');
+            
             const debit = document.getElementById('debitFromFinance').checked;
             if (debit) {
                 const saldoAtual = Assistant.getLiquidBalance();
                 if (amount > saldoAtual) { return alert(`Saldo insuficiente para realizar este aporte!\n\nSaldo atual: R$ ${saldoAtual.toLocaleString('pt-BR')}\nValor do aporte: R$ ${amount.toLocaleString('pt-BR')}\n\nO registro foi cancelado.`); }
             }
+            
             const list = Invest.getData();
             list.push({ id: Date.now(), name, type, amount, date: new Date().toLocaleDateString('pt-BR') });
             Invest.save(list);
+            
             if(debit) { Finance.add(`Aporte: ${name}`, amount, 'Investimento'); }
+            
             closeModal('investAddModal');
             Logger.log('Novo investimento', `${name} - R$ ${amount}`);
             Feedback.trackAction();
@@ -1968,6 +2028,8 @@
             }
         },
         add: () => {
+            if(!AdSystem.validateAction()) return;
+
             const name = document.getElementById('assetName').value; 
             const total = parseInt(document.getElementById('assetTotal').value); 
             const value = parseMoneyInput(document.getElementById('assetValue').value);
@@ -2111,43 +2173,107 @@
 
     const Assistant = {
         state: 'IDLE', tempData: {},
+        
         getLiquidBalance: () => {
             const fixedSalary = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
+            
             const transactions = Finance.getData();
-            const currentMonth = new Date().toISOString().slice(0, 7);
+            const currentMonth = new Date().toISOString().slice(0, 7); 
             const monthTrans = transactions.filter(t => t.date.startsWith(currentMonth));
-            let extraIncome = 0; let expenses = 0;
+            
+            let extraIncome = 0; 
+            let expenses = 0;
+            
             monthTrans.forEach(t => {
-                if (t.amount > 0 && t.cat !== 'Salário') extraIncome += t.amount;
-                else if (t.amount < 0) expenses += Math.abs(t.amount);
+                if (t.amount > 0 && t.cat !== 'Salário') {
+                    extraIncome += t.amount;
+                }
+                else if (t.amount < 0) {
+                    expenses += Math.abs(t.amount);
+                }
             });
             return (fixedSalary + extraIncome) - expenses;
         },
+
         init: () => {
-            const input = document.getElementById('cmdInput'); const term = document.getElementById('assistTerminal');
-            const newInp = input.cloneNode(true); input.parentNode.replaceChild(newInp, input);
-            newInp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const val = Security.sanitize(newInp.value); newInp.value = ''; if (val.trim()) Assistant.processInput(val); } });
-            term.innerHTML = ''; Assistant.print('<em>Iniciando central de comandos Capitalis...</em>', 'sys');
-            const session = JSON.parse(sessionStorage.getItem('capitalis_session')); const name = session ? session.name.split(' ')[0] : 'Usuário';
-            setTimeout(() => { Assistant.print(`Olá, <strong>${name}</strong>.`, 'success'); Assistant.showMainMenu(); }, 600);
+            const input = document.getElementById('cmdInput'); 
+            const term = document.getElementById('assistTerminal');
+            const newInp = input.cloneNode(true); 
+            input.parentNode.replaceChild(newInp, input);
+            
+            newInp.addEventListener('keydown', (e) => { 
+                if (e.key === 'Enter') { 
+                    const val = Security.sanitize(newInp.value); 
+                    newInp.value = ''; 
+                    if (val.trim()) Assistant.processInput(val); 
+                } 
+            });
+            
+            term.innerHTML = ''; 
+            Assistant.print('<em>Iniciando central de comandos Capitalis...</em>', 'sys');
+            
+            const session = JSON.parse(sessionStorage.getItem('capitalis_session')); 
+            const name = session ? session.name.split(' ')[0] : 'Usuário';
+            
+            setTimeout(() => { 
+                Assistant.print(`Olá, <strong>${name}</strong>.`, 'success'); 
+                Assistant.showMainMenu(); 
+            }, 600);
         },
+
         showMainMenu: () => {
-            const liquid = Assistant.getLiquidBalance(); const color = liquid >= 0 ? '#4caf50' : '#f44336';
+            const liquid = Assistant.getLiquidBalance(); 
+            const color = liquid >= 0 ? '#4caf50' : '#f44336';
             let msg = `Saldo em Conta: <strong style="color:${color}">R$ ${liquid.toLocaleString('pt-BR')}</strong>.<br>`;
-            if (liquid <= 0) msg += `<span style="font-size:0.8rem; color:#ff9800;">Atenção: você está sem saldo, clique no botão abaixo para adicionar um salário ou renda extra!</span><br>`;
-            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Capitalis, em que posso te ajudar? (selecione as opções)`;
+            
+            if (liquid <= 0) {
+                msg += `<span style="font-size:0.8rem; color:#ff9800;">Atenção: você está sem saldo. Adicione renda ou salário fixo.</span><br>`;
+            }
+            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Capitalis, em que posso te ajudar?`;
+            
             Assistant.print(msg, 'sys');
-            Assistant.appendActions([ { text: '💸 Pagar Conta', action: "pagar" }, { text: '📈 Investir', action: "investir" }, { text: '💰 Salário/Renda', action: "salario" }, { text: '🧾 Nova Despesa', action: "add_conta" }, { text: '🗑️ Limpar Chat', action: "clear_chat" } ]);
+            Assistant.appendActions([ 
+                { text: '💸 Pagar Conta', action: "pagar" }, 
+                { text: '📈 Investir', action: "investir" }, 
+                { text: '💰 Salário/Renda', action: "salario" }, 
+                { text: '🧾 Nova Despesa', action: "add_conta" }, 
+                { text: '🗑️ Limpar Chat', action: "clear_chat" } 
+            ]);
             Assistant.state = 'IDLE';
         },
+
         appendActions: (actions) => {
-            const term = document.getElementById('assistTerminal'); const div = document.createElement('div');
-            div.className = 'chat-actions-container'; div.style.marginTop = '10px'; div.style.display = 'flex'; div.style.gap = '8px'; div.style.flexWrap = 'wrap';
-            actions.forEach(act => { const btn = document.createElement('span'); btn.className = 'chat-tag'; btn.innerHTML = act.text; btn.style.cursor = 'pointer'; btn.onclick = () => Assistant.trigger(act.action); div.appendChild(btn); });
-            term.appendChild(div); term.scrollTop = term.scrollHeight;
+            const term = document.getElementById('assistTerminal'); 
+            const div = document.createElement('div');
+            div.className = 'chat-actions-container'; 
+            div.style.marginTop = '10px'; 
+            div.style.display = 'flex'; 
+            div.style.gap = '8px'; 
+            div.style.flexWrap = 'wrap';
+            
+            actions.forEach(act => { 
+                const btn = document.createElement('span'); 
+                btn.className = 'chat-tag'; 
+                btn.innerHTML = act.text; 
+                btn.style.cursor = 'pointer'; 
+                btn.onclick = () => Assistant.trigger(act.action); 
+                div.appendChild(btn); 
+            });
+            term.appendChild(div); 
+            term.scrollTop = term.scrollHeight;
         },
+
         trigger: (cmd) => { Assistant.processInput(cmd); },
-        print: (msg, type = 'sys') => { const term = document.getElementById('assistTerminal'); const div = document.createElement('div'); div.className = 'msg-' + type; div.innerHTML = msg; term.appendChild(div); term.scrollTop = term.scrollHeight; },
+
+        print: (msg, type = 'sys') => { 
+            const term = document.getElementById('assistTerminal'); 
+            const div = document.createElement('div'); 
+            div.className = 'msg-' + type; 
+            div.innerHTML = msg; 
+            term.appendChild(div); 
+            term.scrollTop = term.scrollHeight; 
+        },
+
         processSalaryCalculation: (grossVal, loansToDeduct, isSimulation) => {
             const allDebts = Debts.getData();
             const result = processarHolerite(grossVal, loansToDeduct);
@@ -2159,8 +2285,9 @@
             } else {
                 StorageManager.save('capitalis_fixed_salary', result.liquido);
                 
-                msg = `<strong>Salário fixo atualizado!</strong><br>`;
+                Finance.add(`Salário Fixo (Ref. Mês)`, result.liquido, 'Salário');
 
+                msg = `<strong>Salário fixo atualizado e registrado!</strong><br>`;
                 result.transacoes.forEach(t => {
                     if (t.idEmprestimoRelacionado) {
                         const debt = allDebts.find(d => d.id === t.idEmprestimoRelacionado);
@@ -2178,31 +2305,16 @@
 
             msg += `<small>Salário Bruto: R$ ${fmt(result.bruto)}</small><br>`;
             msg += `<small style="color:var(--danger)">(-) INSS: R$ ${fmt(result.inss)}</small><br>`;
-            
-            if(result.irrf > 0) {
-                msg += `<small style="color:var(--danger)">(-) IRRF: R$ ${fmt(result.irrf)}</small><br>`;
-            }
-
-            if (result.totalEmprestimos > 0) { 
-                msg += `<small style="color:var(--warning)">(-) Empréstimos: R$ ${fmt(result.totalEmprestimos)}</small><br>`; 
-            }
+            if(result.irrf > 0) msg += `<small style="color:var(--danger)">(-) IRRF: R$ ${fmt(result.irrf)}</small><br>`;
+            if (result.totalEmprestimos > 0) msg += `<small style="color:var(--warning)">(-) Empréstimos: R$ ${fmt(result.totalEmprestimos)}</small><br>`; 
 
             msg += `------------------------------<br>`;
-            msg += `<strong>Líquido (Base): R$ ${fmt(result.liquido)}</strong><br><br>`;
+            msg += `<strong>Líquido: R$ ${fmt(result.liquido)}</strong><br><br>`;
             
             if(!isSimulation) {
-                const transactions = Finance.getData();
-                const currentMonth = new Date().toISOString().slice(0, 7);
-                const gastosMes = Math.abs(transactions
-                    .filter(t => t.date.startsWith(currentMonth) && t.amount < 0)
-                    .reduce((acc, t) => acc + t.amount, 0));
-                
-                const saldoFinal = result.liquido - gastosMes;
-
-                msg += `<em>Resumo do Caixa:</em><br>`;
-                msg += `<small>+ Líquido: R$ ${fmt(result.liquido)}</small><br>`;
-                msg += `<small style="color:var(--danger)">- Gastos já lançados: R$ ${fmt(gastosMes)}</small><br>`;
-                msg += `<strong>= Saldo Atual: R$ ${fmt(saldoFinal)}</strong>`;
+                const saldoAtualizado = Assistant.getLiquidBalance();
+                msg += `<em>Caixa Atualizado:</em><br>`;
+                msg += `<strong>= R$ ${fmt(saldoAtualizado)}</strong>`;
             }
 
             Assistant.print(msg, isSimulation ? 'info' : 'success');
@@ -2216,19 +2328,26 @@
                 Assistant.showMainMenu(); 
             }
         },
+
         processInput: (text) => {
             const lower = text.toLowerCase().trim();
             if (lower === 'clear_chat') { document.getElementById('assistTerminal').innerHTML = ''; Assistant.state = 'IDLE'; Assistant.showMainMenu(); return; }
             if (['cancelar', 'voltar', 'menu'].includes(lower)) { Assistant.state = 'IDLE'; return Assistant.showMainMenu(); }
+            
             if(!['pagar', 'investir', 'salario', 'add_conta', 'sim', 'não', 'confirm_loan_yes', 'confirm_loan_no', 'simular_salario', 'definir_fixo', 'novo_fixo'].includes(lower) && !lower.startsWith('pay_id_') && !lower.startsWith('sel_id_')) { Assistant.print(text, 'user'); }
+            
             if (Assistant.state === 'IDLE') {
                 if (lower === 'pagar') {
                     const liquid = Assistant.getLiquidBalance();
-                    if (liquid <= 0) return Assistant.print('Você não tem saldo suficiente. Para continuar com essa operação, será necessário adicionar renda ou salário fixo.', 'err');
-                    const debts = Debts.getData(); const currentMonth = new Date().toISOString().slice(0, 7);
+                    if (liquid <= 0) return Assistant.print('Saldo insuficiente para pagar contas.', 'err');
+                    
+                    const debts = Debts.getData(); 
+                    const currentMonth = new Date().toISOString().slice(0, 7);
                     const pending = debts.filter(d => d.lastPaid !== currentMonth && d.amount > 0);
+                    
                     if (pending.length === 0) return Assistant.print('Nenhuma conta pendente.', 'success');
-                    Assistant.print(`Saldo: R$ ${liquid.toLocaleString('pt-BR')}. Qual conta você deseja pagar?`, 'sys');
+                    
+                    Assistant.print(`Saldo: R$ ${liquid.toLocaleString('pt-BR')}. Qual conta pagar?`, 'sys');
                     const actions = pending.map(d => ({ text: `💸 ${d.name} (R$ ${d.amount})`, action: `pay_id_${d.id}` }));
                     actions.push({ text: 'Cancelar', action: 'cancelar' });
                     Assistant.appendActions(actions);
@@ -2239,32 +2358,34 @@
                     const liquid = Assistant.getLiquidBalance();
                     if (liquid <= 0) return Assistant.print('Verifique seu saldo antes de continuar.', 'err');
                     Assistant.state = 'WAITING_INVEST_AMOUNT';
-                    return Assistant.print(`Saldo livre: <strong>R$ ${liquid.toLocaleString('pt-BR')}</strong>. Quanto você deseja investir?`);
+                    return Assistant.print(`Saldo livre: <strong>R$ ${liquid.toLocaleString('pt-BR')}</strong>. Quanto investir?`);
                 }
                 if (lower === 'salario') {
                     const currentFixed = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
                     Assistant.print(`Salário fixo atual: <strong>R$ ${currentFixed.toLocaleString('pt-BR')}</strong>.`);
                     Assistant.print('O que deseja fazer?', 'sys');
-                    Assistant.appendActions([ { text: '🧮 Simular Bruto (Temporário)', action: 'simular_salario' }, { text: '💾 Definir Novo Salário Fixo', action: 'definir_fixo' }, { text: '➕ Renda Extra', action: 'add_renda_extra' } ]);
+                    Assistant.appendActions([ { text: '🧮 Simular Bruto', action: 'simular_salario' }, { text: '💾 Definir Novo Salário Fixo', action: 'definir_fixo' }, { text: '➕ Renda Extra', action: 'add_renda_extra' } ]);
                     return;
                 }
-                if (lower === 'simular_salario') { Assistant.tempData.isSimulation = true; Assistant.state = 'WAITING_GROSS_SALARY'; return Assistant.print('Digite o valor <strong>bruto</strong> para continuar com a simulação:'); }
-                if (lower === 'definir_fixo') { Assistant.print('⚠️ <strong>Atenção:</strong> O salário fixo define sua base mensal. Altere apenas se houve mudança real de emprego ou contrato.', 'warn'); Assistant.appendActions([{ text: 'Continuar', action: 'novo_fixo' }, { text: 'Cancelar', action: 'cancelar' }]); return; }
-                if (lower === 'novo_fixo') { Assistant.tempData.isSimulation = false; Assistant.state = 'WAITING_GROSS_SALARY'; return Assistant.print('Digite o novo valor <strong>bruto</strong> para continuar com a operação:'); }
+                if (lower === 'simular_salario') { Assistant.tempData.isSimulation = true; Assistant.state = 'WAITING_GROSS_SALARY'; return Assistant.print('Digite o valor <strong>bruto</strong> para simulação:'); }
+                if (lower === 'definir_fixo') { Assistant.print('⚠️ <strong>Atenção:</strong> Isso define sua base mensal. Altere apenas se houve mudança real.', 'warn'); Assistant.appendActions([{ text: 'Continuar', action: 'novo_fixo' }, { text: 'Cancelar', action: 'cancelar' }]); return; }
+                if (lower === 'novo_fixo') { Assistant.tempData.isSimulation = false; Assistant.state = 'WAITING_GROSS_SALARY'; return Assistant.print('Digite o novo valor <strong>bruto</strong>:'); }
                 if (lower === 'add_renda_extra') { Assistant.state = 'WAITING_EXTRA_INCOME_DESC'; return Assistant.print('Qual a origem da renda?'); }
                 if (lower === 'add_conta') { 
                     const debts = Debts.getData();
-                    let msg = 'Essa conta já foi registrada, verifique o nome e tente novamente!<br>';
+                    let msg = 'Contas já registradas:<br>';
                     if(debts.length > 0) { debts.forEach((d, index) => { msg += `(ID ${index + 1}) ${d.name}<br>`; }); } 
-                    else { msg += 'Nenhuma conta cadastrada ainda!<br>'; }
+                    else { msg += 'Nenhuma conta cadastrada.<br>'; }
                     const nextId = debts.length + 1;
-                    msg += `<br>Digite o <strong>número do ID</strong> existente para repetir a conta, ou digite um <strong>novo nome</strong> (será ID ${nextId}).`;
+                    msg += `<br>Digite o <strong>número do ID</strong> para repetir, ou um <strong>novo nome</strong> (ID ${nextId}).`;
                     Assistant.print(msg);
                     Assistant.state = 'WAITING_BILL_ID_OR_NAME'; 
                     return; 
                 }
-                return Assistant.print('Ainda não tenho conhecimento suficiente para compreender-lo, mas posso tentar ajudar se você me guiar pelos botões.');
+                return Assistant.print('Não entendi. Use os botões.');
             }
+
+            // --- ESTADOS DE ESPERA ---
             if (Assistant.state === 'WAITING_GROSS_SALARY') {
                 const grossVal = parseMoneyInput(text);
                 if (!grossVal) return Assistant.print('Valor inválido.');
@@ -2274,22 +2395,24 @@
                     const totalLoans = loans.reduce((a, b) => a + b.valorParcela, 0);
                     Assistant.tempData.pendingGross = grossVal;
                     Assistant.tempData.pendingLoans = loans; 
-                    Assistant.print(`Identifiquei <strong>${loans.length} empréstimos</strong> (Total: R$ ${totalLoans.toLocaleString('pt-BR')}).<br>Você deseja descontar seu empréstimo na folha de pagamento?`, 'warn');
-                    Assistant.appendActions([ { text: 'Sim, desejo descontar direto da folha de pagamento', action: 'confirm_loan_yes' }, { text: 'Não, descontar depois como despesa.', action: 'confirm_loan_no' } ]);
+                    Assistant.print(`Identifiquei <strong>${loans.length} empréstimos</strong> (Total: R$ ${totalLoans.toLocaleString('pt-BR')}).<br>Descontar direto da folha?`, 'warn');
+                    Assistant.appendActions([ { text: 'Sim', action: 'confirm_loan_yes' }, { text: 'Não', action: 'confirm_loan_no' } ]);
                     Assistant.state = 'WAITING_LOAN_CONFIRMATION';
                     return;
                 }
                 Assistant.processSalaryCalculation(grossVal, [], Assistant.tempData.isSimulation);
                 return;
             }
+
             if (Assistant.state === 'WAITING_LOAN_CONFIRMATION') {
                 const grossVal = Assistant.tempData.pendingGross;
                 const loans = Assistant.tempData.pendingLoans;
                 const isSim = Assistant.tempData.isSimulation;
                 if (lower === 'confirm_loan_yes') { Assistant.processSalaryCalculation(grossVal, loans, isSim); } 
-                else { Assistant.print('Certo, estou calculando para abater sem descontar empréstimos.', 'sys'); Assistant.processSalaryCalculation(grossVal, [], isSim); }
+                else { Assistant.print('Calculando sem descontar empréstimos.', 'sys'); Assistant.processSalaryCalculation(grossVal, [], isSim); }
                 return;
             }
+
             if (Assistant.state === 'WAITING_PAYMENT_SELECTION') {
                 if (lower.startsWith('pay_id_')) {
                     const id = parseInt(lower.replace('pay_id_', ''));
@@ -2301,45 +2424,55 @@
                         target.lastPaid = new Date().toISOString().slice(0, 7);
                         if(target.type === 'loan' && target.installments) target.installments.current++;
                         StorageManager.save('capitalis_debts', debts);
-                        if(typeof renderStrategy === 'function') renderStrategy(); Assets.render();
-                        Assistant.print(`<strong>${target.name}</strong> pago!`, 'success'); Assistant.showMainMenu();
+                        if(typeof renderStrategy === 'function') renderStrategy(); 
+                        Assets.render();
+                        if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
+                        Assistant.print(`<strong>${target.name}</strong> pago!`, 'success'); 
+                        Assistant.showMainMenu();
                     }
                 } else Assistant.showMainMenu();
                 return;
             }
+
             if (Assistant.state === 'WAITING_INVEST_AMOUNT') {
                 const val = parseMoneyInput(text); const liquid = Assistant.getLiquidBalance();
                 if (!val || val <= 0) return Assistant.print('Valor inválido.');
                 if (val > liquid) return Assistant.print(`Saldo insuficiente.`);
                 Assistant.tempData.investAmount = val;
-                Assistant.print(`Valor R$ ${val.toLocaleString('pt-BR')} aceito. Em qual tipo de fundo você deseja investir hoje?`);
+                Assistant.print(`Valor R$ ${val.toLocaleString('pt-BR')} aceito. Onde investir?`);
                 Assistant.appendActions([ { text: '🛡️ Reserva', action: 'dest_reserva' }, { text: '📈 Ações', action: 'dest_acao' }, { text: '🏦 Fixa', action: 'dest_fixa' } ]);
                 Assistant.state = 'WAITING_INVEST_DEST';
                 return;
             }
+
             if (Assistant.state === 'WAITING_INVEST_DEST') {
                 let typeKey = '';
                 if (lower === 'dest_reserva') typeKey = 'Reserva';
                 else if (lower === 'dest_acao') typeKey = 'Ações';
                 else if (lower === 'dest_fixa') typeKey = 'Renda Fixa';
-                else return Assistant.print('Selecione uma opção válida.');
+                else return Assistant.print('Inválido.');
                 Assistant.tempData.investType = typeKey;
                 Assistant.state = 'WAITING_INVEST_INSTITUTION';
-                return Assistant.print(`Certo, ${typeKey}. <strong>Em qual instituição</strong> está guardado? (Ex: Nubank, XP)`);
+                return Assistant.print(`Certo, ${typeKey}. <strong>Qual instituição</strong>?`);
             }
+
             if (Assistant.state === 'WAITING_INVEST_INSTITUTION') {
                 const institution = Security.sanitize(text);
                 const amount = Assistant.tempData.investAmount;
                 const type = Assistant.tempData.investType;
                 let logName = '';
+                
                 if (type === 'Reserva') {
                     logName = `Reserva (${institution})`;
                     const reserveData = Invest.getReserve();
-                    const existingItem = reserveData.items.find(i => i.inst.toLowerCase().includes(institution.toLowerCase()));      
+                    const existingItem = reserveData.items.find(i => i.inst.toLowerCase().includes(institution.toLowerCase()));       
                     if (existingItem) { existingItem.val += amount; } 
                     else {
-                        if (reserveData.type === 'single' && reserveData.items[0].inst === 'Não definido') { reserveData.items[0].inst = institution; reserveData.items[0].val += amount; } 
-                        else { reserveData.type = 'multi'; reserveData.items.push({ inst: institution, val: amount, obj: 'Via assistente' }); }
+                        if (reserveData.type === 'single' && reserveData.items[0].inst === 'Não definido') { 
+                            reserveData.items[0].inst = institution; reserveData.items[0].val += amount; 
+                        } else { 
+                            reserveData.type = 'multi'; reserveData.items.push({ inst: institution, val: amount, obj: 'Via assistente' }); 
+                        }
                     }
                     StorageManager.save('capitalis_reserve', reserveData);
                 } else {
@@ -2348,45 +2481,67 @@
                     invList.push({ id: Date.now(), name: `${institution} (${type})`, type: type, amount: amount, date: new Date().toLocaleDateString('pt-BR') });
                     Invest.save(invList);
                 }
+                
                 Finance.add(`Aporte: ${logName}`, amount * -1, 'Investimento'); 
                 Invest.render();
                 if(typeof renderStrategy === 'function') renderStrategy();
+                if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
                 Assistant.print(`<strong>R$ ${amount.toLocaleString('pt-BR')}</strong> investidos!`, 'success');
                 Assistant.showMainMenu();
                 return;
             }
-            if (Assistant.state === 'WAITING_EXTRA_INCOME_DESC') { Assistant.tempData.incomeDesc = text; Assistant.state = 'WAITING_EXTRA_INCOME_VAL'; return Assistant.print('Qual valor você deseja adicionar?'); }
+
+            if (Assistant.state === 'WAITING_EXTRA_INCOME_DESC') { 
+                Assistant.tempData.incomeDesc = text; 
+                Assistant.state = 'WAITING_EXTRA_INCOME_VAL'; 
+                return Assistant.print('Qual valor?'); 
+            }
+
             if (Assistant.state === 'WAITING_EXTRA_INCOME_VAL') {
                 const val = parseMoneyInput(text); if (!val) return Assistant.print('Inválido.');
                 Finance.add(Assistant.tempData.incomeDesc, val, 'Adicionar renda extra');
-                Assistant.print('Renda adicionada', 'success'); renderStrategy(); Assistant.showMainMenu(); return;
+                if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
+                Assistant.print('Renda adicionada', 'success'); 
+                renderStrategy(); 
+                Assistant.showMainMenu(); 
+                return;
             }
+
             if (Assistant.state === 'WAITING_BILL_ID_OR_NAME') {
                 if (!isNaN(text)) {
                     const idIndex = parseInt(text) - 1;
                     const debts = Debts.getData();
                     if (debts[idIndex]) {
                         Assistant.tempData.newBillName = debts[idIndex].name;
-                        Assistant.print(`Selecionado: <strong>${debts[idIndex].name}</strong>. Qual o valor total da sua conta?`);
+                        Assistant.print(`Selecionado: <strong>${debts[idIndex].name}</strong>. Valor total?`);
                         Assistant.state = 'WAITING_BILL_VAL';
-                    } else { Assistant.print('Não consegui localizar esse ID, você pode tentar um nome ou um ID diferente.', 'err'); }
+                    } else { Assistant.print('ID não encontrado.', 'err'); }
                 } else {
                     Assistant.tempData.newBillName = text;
-                    Assistant.print(`Nova conta: <strong>${text}</strong>. Qual o valor total da sua conta?`);
+                    Assistant.print(`Nova conta: <strong>${text}</strong>. Valor total?`);
                     Assistant.state = 'WAITING_BILL_VAL';
                 }
                 return;
             }
+
             if (Assistant.state === 'WAITING_BILL_VAL') {
                 const val = parseMoneyInput(text); if(!val) return Assistant.print('Inválido.');
-                Assistant.tempData.newBillVal = val; Assistant.print('Qual é o dia do vencimento?'); Assistant.state = 'WAITING_BILL_DAY'; return;
+                Assistant.tempData.newBillVal = val; 
+                Assistant.print('Dia do vencimento? (1-31)'); 
+                Assistant.state = 'WAITING_BILL_DAY'; 
+                return;
             }
+
             if (Assistant.state === 'WAITING_BILL_DAY') {
                 const day = parseInt(text); if(!day || day < 1 || day > 31) return Assistant.print('Dia inválido.');
                 Debts.add(Assistant.tempData.newBillName, Assistant.tempData.newBillVal, 'essential', day, null);
-                Assistant.print('Sua conta foi registrada com sucesso!', 'success'); Assistant.showMainMenu(); return;
+                if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
+                Assistant.print('Conta registrada!', 'success'); 
+                Assistant.showMainMenu(); 
+                return;
             }
         },
+
         processPayment: (id) => {
              switchView('tools', document.querySelector(`.nav-item[onclick*="'tools'"]`));
              Assistant.print('Iniciando pagamento...', 'sys');
@@ -2507,7 +2662,26 @@
 
     const Income = {
         getData: () => StorageManager.load('capitalis_income') || [],
-        save: () => { const date = document.getElementById('incDate').value; const company = Security.sanitize(document.getElementById('incCompany').value); const role = Security.sanitize(document.getElementById('incRole').value); const grossInput = document.getElementById('incGross').value; const netInput = document.getElementById('incNet').value; const status = document.getElementById('incStatus').value; if (!date || !grossInput) return alert('Preencha os dados.'); Logger.log('Nova Renda', `${company} - R$ ${netInput}`); const data = Income.getData(); data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); StorageManager.save('capitalis_income', data); renderIncome(); closeModal('incomeModal'); Feedback.trackAction(); },
+        save: () => { 
+            if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+
+            const date = document.getElementById('incDate').value; 
+            const company = Security.sanitize(document.getElementById('incCompany').value); 
+            const role = Security.sanitize(document.getElementById('incRole').value); 
+            const grossInput = document.getElementById('incGross').value; 
+            const netInput = document.getElementById('incNet').value; 
+            const status = document.getElementById('incStatus').value; 
+            
+            if (!date || !grossInput) return alert('Preencha os dados.'); 
+            
+            Logger.log('Nova Renda', `${company} - R$ ${netInput}`); 
+            const data = Income.getData(); 
+            data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); 
+            StorageManager.save('capitalis_income', data); 
+            renderIncome(); 
+            closeModal('incomeModal'); 
+            Feedback.trackAction(); 
+        },
         remove: (id) => { if(confirm('Deseja excluir?')) { StorageManager.save('capitalis_income', Income.getData().filter(i => i.id !== id)); renderIncome(); } },
         markAsPaid: (id) => { if(confirm('Confirmar recebimento de nova renda?')) { const data = Income.getData(); const item = data.find(i => i.id === id); if(item) { item.status = 'Pago'; StorageManager.save('capitalis_income', data); renderIncome(); } } }
     };
@@ -2636,42 +2810,56 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function logout() { if(confirm('Deseja sair?')) { sessionStorage.removeItem('capitalis_session'); window.location.href = 'index.html'; } }
     function saveTransaction() { 
+        if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+
         const desc = document.getElementById('tDesc').value; 
         let val = parseMoneyInput(document.getElementById('tAmount').value); 
         const cat = document.getElementById('tCat').value; 
+        
         if (!desc || val === 0) return alert('Preencha a descrição e o valor.');
+        
         if (val > 0) val = val * -1; 
+        
         const saldoAtual = Assistant.getLiquidBalance();
         if (Math.abs(val) > saldoAtual) {
              return alert(`Operação cancelada!\n\nSeu saldo atual é de R$ ${saldoAtual.toLocaleString('pt-BR')}.\nVocê tentou gastar R$ ${Math.abs(val).toLocaleString('pt-BR')}.\n\nAdicione fundos (Renda/Salário) antes de gastar.`);
         }
 
         Finance.add(desc, val, cat);
-        
         Feedback.trackAction();
     }
 
+    function saveDebt() { 
+        if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+
+        const name = document.getElementById('dName').value; 
+        const amount = document.getElementById('dAmount').value; 
+        const type = document.getElementById('dType').value; 
+        if(!name || !amount) return alert('Preencha nome e valor.'); 
+        Debts.add(name, amount, type, document.getElementById('dDue').value, type === 'loan' ? { current: document.getElementById('dCurrInst').value, total: document.getElementById('dTotalInst').value } : null, document.getElementById('dInstValue').value); 
+    }
     window.addEventListener("beforeunload", () => StorageManager.emergencySave());
     window.onload = function() {
         const session = JSON.parse(sessionStorage.getItem('capitalis_session'));
         if(session) { document.getElementById('userNameDisplay').innerText = session.name; document.getElementById('userAvatarLetter').innerText = session.initial; }
         document.body.classList.add('privacy-mode');
+        
         const toggleBtn = document.getElementById('themeToggle'); const privacyBtn = document.getElementById('privacyToggle');
         if (StorageManager.load('capitalis_theme') === 'light') document.body.classList.add('light-mode');
+        
         toggleBtn.addEventListener('click', () => { document.body.classList.toggle('light-mode'); StorageManager.save('capitalis_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); });
         privacyBtn.addEventListener('click', () => { document.body.classList.toggle('privacy-mode'); });
-        document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
         
+        document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
+    
         renderFinance(); 
         Debts.checkNotifications(); 
         Assistant.init(); 
         Security.autoLock(); 
-
         Updates.init();
-        
         const showedTutorial = Tutorial.init();
         if (!showedTutorial) {
-            AdSystem.checkAccess();
+            AdSystem.initTimer();
         }
     };
     </script>
