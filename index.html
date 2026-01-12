@@ -23,6 +23,7 @@
             --shadow-color: rgba(0, 0, 0, 0.7);
             --bg-card: #0d1117;
             --border-color: #30363d;
+            --success: #238636;
             
             /* Footer Ultra Premium */
             --glass-footer: rgba(5, 5, 5, 0.4); 
@@ -42,6 +43,7 @@
             --shadow-color: rgba(0, 0, 0, 0.15);
             --bg-card: #ffffff;
             --border-color: #e2e8f0;
+            --success: #16a34a;
             
             --glass-footer: rgba(255, 255, 255, 0.5);
             --glass-footer-border: rgba(0, 0, 0, 0.05);
@@ -141,6 +143,7 @@
         .theme-toggle-container { position: absolute; top: 25px; right: 25px; z-index: 999; }
         .theme-btn { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: var(--text-main); font-size: 1.1rem; }
         .theme-btn:hover { transform: scale(1.05); background: var(--input-bg); color: var(--primary); }
+        
         .main-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             padding: 15px 50px;
@@ -185,11 +188,13 @@
         }
         .integrux-badge strong { font-weight: 700; color: var(--text-main); }
         .integrux-badge:hover strong { color: var(--primary); text-shadow: 0 0 10px rgba(47, 129, 247, 0.4); }
+        
         .version-badge {
             font-size: 0.7rem; opacity: 0.6; color: var(--text-muted);
             cursor: pointer; font-family: 'JetBrains Mono', monospace; margin-left: 10px;
         }
         .version-badge:hover { opacity: 1; color: var(--primary); }
+        
         .toast { 
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%); 
             background: rgba(16, 185, 129, 0.95); backdrop-filter: blur(10px); color: white; 
@@ -200,6 +205,7 @@
         }
         .toast.error { background: rgba(248, 81, 73, 0.95); }
         .toast.show { transform: translateX(-50%) translateY(0); }
+        
         .custom-modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1000; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
@@ -236,6 +242,24 @@
         .modal-content-scroll::-webkit-scrollbar-track { background: transparent; }
         .modal-content-scroll::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 4px; border: 2px solid var(--bg-dark); }
         .modal-content-scroll::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* --- STYLES FOR CHANGELOG TIMELINE --- */
+        .timeline { position: relative; padding-left: 20px; border-left: 2px solid var(--border-color); margin-top: 10px; }
+        .timeline-item { margin-bottom: 30px; position: relative; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-dot { position: absolute; left: -27px; top: 2px; width: 12px; height: 12px; background: var(--bg-dark); border: 2px solid var(--text-muted); border-radius: 50%; transition: 0.3s; }
+        .timeline-item:first-child .timeline-dot { border-color: var(--success); background: var(--success); box-shadow: 0 0 10px var(--success); }
+        
+        .version-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .v-tag { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-main); font-size: 1rem; }
+        .v-date { font-size: 0.75rem; color: var(--text-muted); }
+        .v-badge-beta { background: rgba(255, 152, 0, 0.15); color: orange; border: 1px solid rgba(255, 152, 0, 0.3); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        
+        .v-title { font-weight: 600; color: var(--primary); font-size: 0.95rem; margin-bottom: 8px; display: block; }
+        .v-list { list-style: none; padding: 0; }
+        .v-list li { position: relative; padding-left: 15px; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); }
+        .v-list li::before { content: "•"; color: var(--border-color); position: absolute; left: 0; }
+
         @media (max-width: 850px) {
             .container { margin-bottom: 160px; }
             .brand-side, .form-logo-area { display: none; }
@@ -327,7 +351,7 @@
             <a href="https://integrux.dev/" target="_blank" class="integrux-badge">
                 Desenvolvido por <strong>Integrux</strong>
             </a>
-            <span class="version-badge" onclick="showVersionInfo()" title="Versão Atual">v3.5</span>
+            <span class="version-badge" onclick="openChangelogModal()" title="Histórico de Versões">v1.0.1</span>
         </div>
 
         <div class="footer-right">
@@ -339,6 +363,18 @@
         </div>
 
     </footer>
+
+    <div id="changelogModal" class="custom-modal-overlay">
+        <div class="custom-modal-container">
+            <div class="modal-header">
+                <span class="modal-title"><i class="bi bi-clock-history" style="color: var(--primary);"></i> Histórico de Versões</span>
+                <button class="modal-close-btn" onclick="closeChangelogModal()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-content-scroll">
+                <div class="timeline" id="changelogList"></div>
+            </div>
+        </div>
+    </div>
 
     <div id="ouvidoriaModal" class="custom-modal-overlay">
         <div class="custom-modal-container">
@@ -431,6 +467,74 @@
     </div>
 
     <script>
+        const CHANGELOG = [
+                  {
+            version: 'v1.0.1',
+            date: '12/01/2026',
+            title: 'Melhorias de usabilidade',
+            items: [
+                'Ajuste na sensibilidade do scroll durante a leitura dos termos de uso.',
+                'Bloqueio de atualização acidental (pull-to-push) durante o tutorial e janelas abertas.',
+                'Otimização da navegação em dispositivos móveis.'
+            ]
+        },
+      {
+            version: 'v1.0.0',
+            date: '12/01/2026',
+            title: 'Lançamento Oficial (Beta Pública)',
+            items: [
+                'Início do ciclo oficial v1.0.',
+                'Sistema consolidado com Gestão, Renda e Investimentos.',
+                'Integração completa de Ouvidoria, Feedback e Terminal.',
+                'Segurança de dados e funcionalidade 100% Offline.'
+            ]
+        },
+        {
+            version: 'Fase Beta',
+            date: 'Jan/2026',
+            title: 'Histórico de Desenvolvimento',
+            items: [
+                'Ajustes de Segurança: Reset individual e proteção de dados.',
+                'Correções: Cálculo de INSS/IRRF no holerite.',
+                'Novidades: Simulador de Juros, Gráficos e Terminal de Comandos.',
+                'Base: Criação do sistema de Backup JSON e Temas.'
+            ]
+        }
+        ];
+
+        function openChangelogModal() {
+            const list = document.getElementById('changelogList');
+            list.innerHTML = ''; // Limpa antes de renderizar
+
+            CHANGELOG.forEach((log, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'timeline-item';
+                
+                // Monta a lista de itens (bullets)
+                let itemsHtml = '<ul class="v-list">';
+                log.items.forEach(i => { itemsHtml += `<li>${i}</li>` });
+                itemsHtml += '</ul>';
+
+                // Verifica se é a última versão (primeira do array) para adicionar destaque se quiser
+                // Neste caso, vou adicionar apenas a data e versão
+                itemDiv.innerHTML = `
+                    <div class="timeline-dot"></div>
+                    <div class="version-header">
+                        <span class="v-tag">${log.version}</span>
+                        <span class="v-badge-beta">BETA</span>
+                        <span class="v-date">${log.date}</span>
+                    </div>
+                    <span class="v-title">${log.title}</span>
+                    ${itemsHtml}
+                `;
+                list.appendChild(itemDiv);
+            });
+
+            document.getElementById('changelogModal').classList.add('active');
+        }
+        function closeChangelogModal() { document.getElementById('changelogModal').classList.remove('active'); }
+
+
         document.addEventListener('DOMContentLoaded', () => {
             const toggleBtn = document.getElementById('themeToggle');
             const body = document.body;
@@ -449,7 +553,8 @@
         function openOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.add('active'); }
         function closeOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.remove('active'); }
 
-        function showVersionInfo() { showToast("Versão 3.5 - Sistema Atualizado", false); }
+        // function showVersionInfo() retirado, pois agora abre o modal
+        
         function sendOuvidoria() {
             const name = document.getElementById('ouvName').value.trim();
             const contact = document.getElementById('ouvContact').value.trim();
