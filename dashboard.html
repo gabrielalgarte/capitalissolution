@@ -507,6 +507,155 @@
             border: 1px solid rgba(35, 134, 54, 0.3); padding: 5px 12px; border-radius: 20px;
             font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px;
         }
+        .rating-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0;
+            flex-direction: row-reverse;
+        }
+
+        .stars input { display: none; }
+
+        .stars label {
+            font-size: 2.2rem;
+            color: var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .stars label:hover,
+        .stars label:hover ~ label,
+        .stars input:checked ~ label {
+            color: var(--invest-gold);
+            transform: scale(1.15);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .feedback-input-area {
+            width: 100%;
+            display: none;
+            animation: fadeIn 0.5s;
+            margin-top: 15px;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            min-height: 80px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .feedback-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--nav-active-bg);
+        }
+        .version-pill {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            z-index: 990;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .version-pill:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .timeline-item {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--bg-panel);
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+        }
+
+        .timeline-item.latest .timeline-dot {
+            border-color: var(--success);
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .version-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .version-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .version-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        
+        .version-desc ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+        
+        .version-desc li {
+            margin-bottom: 4px;
+        }
+
+        .badge-new {
+            background: rgba(35, 134, 54, 0.2);
+            color: var(--success);
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: 1px solid var(--success);
+        }
     </style>
 </head>
 <body>
@@ -1106,9 +1255,202 @@
             </div>
         </div>
     </div>
+</div>
+<div class="modal-overlay" id="feedbackModal" style="z-index: 11000;">
+        <div class="modal" style="max-width: 420px; border-top: 3px solid var(--invest-gold);">
+            <div class="modal-header">
+                <h3><i class="bi bi-stars" style="color: var(--invest-gold);"></i> Sua opinião importa</h3>
+                <button class="btn" style="background:transparent; color:var(--text-main); padding:0; width:30px;" onclick="Feedback.later()"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                    A <strong>Capitalis Solution</strong> agradece imensamente por você utilizar nosso aplicativo!<br><br>
+                    Estamos sempre buscando evoluir. Você poderia nos dizer se há algo que possamos melhorar ou o que está achando da experiência?
+                </p>
+
+                <div class="rating-box">
+                    <div class="stars">
+                        <input type="radio" id="star5" name="rating" value="5" onclick="Feedback.showInput()"><label for="star5"><i class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star4" name="rating" value="4" onclick="Feedback.showInput()"><label for="star4"><i class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star3" name="rating" value="3" onclick="Feedback.showInput()"><label for="star3"><i class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star2" name="rating" value="2" onclick="Feedback.showInput()"><label for="star2"><i class="bi bi-star-fill"></i></label>
+                        <input type="radio" id="star1" name="rating" value="1" onclick="Feedback.showInput()"><label for="star1"><i class="bi bi-star-fill"></i></label>
+                    </div>
+
+                    <div id="feedbackComment" class="feedback-input-area">
+                        <textarea id="feedbackText" class="feedback-textarea" rows="3" placeholder="Escreva sua sugestão, elogio ou crítica aqui..."></textarea>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 15px;" onclick="Feedback.send()">Enviar Feedback</button>
+                    </div>
+                </div>
+
+                <button class="btn" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); margin-top: 15px;" onclick="Feedback.later()">Lembrar mais tarde</button>
+            </div>
+        </div>
+    </div>
+    <div class="version-pill" onclick="Updates.openHistory()">
+        <i class="bi bi-info-circle"></i> <span id="appVersionDisplay">v0.0</span>
+    </div>
+
+    <div class="modal-overlay" id="updatesModal" style="z-index: 12000;">
+        <div class="modal" style="max-width: 500px; max-height: 80vh;">
+            <div class="modal-header">
+                <h3><i class="bi bi-rocket-takeoff" style="color: var(--primary);"></i> Histórico de Versões</h3>
+                <button class="btn" style="background:transparent; color:var(--text-main); padding:0; width:30px;" onclick="closeModal('updatesModal')"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal-body" style="padding-top: 25px;">
+                <div id="updatesTimeline" class="timeline">
+                    </div>
+                
+                <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeModal('updatesModal')">Entendi</button>
+            </div>
+        </div>
+    </div>
 <script src="js/financeiro.js"></script>
         <script>
-        const APP_VERSION = 'v3.4';
+    function processarHolerite(bruto, emprestimos) {
+        let inss = 0;
+        if (bruto <= 1412.00) inss = bruto * 0.075;
+        else if (bruto <= 2666.68) inss = (1412 * 0.075) + ((bruto - 1412) * 0.09);
+        else if (bruto <= 4000.03) inss = (1412 * 0.075) + ((2666.68 - 1412) * 0.09) + ((bruto - 2666.68) * 0.12);
+        else if (bruto <= 7786.02) inss = (1412 * 0.075) + ((2666.68 - 1412) * 0.09) + ((4000.03 - 2666.68) * 0.12) + ((bruto - 4000.03) * 0.14);
+        else inss = 908.85 + ((bruto - 7786.02) * 0.14);
+        if (inss > 908.85) inss = 908.85;
+
+        const baseIrrf = bruto - inss;
+        let irrf = 0;
+        if (baseIrrf <= 2259.20) irrf = 0; 
+        else if (baseIrrf <= 2826.65) irrf = (baseIrrf * 0.075) - 169.44;
+        else if (baseIrrf <= 3751.05) irrf = (baseIrrf * 0.15) - 381.44;
+        else if (baseIrrf <= 4664.68) irrf = (baseIrrf * 0.225) - 662.77;
+        else irrf = (baseIrrf * 0.275) - 896.00;
+        if (irrf < 0) irrf = 0;
+        const totalEmprestimos = emprestimos.reduce((acc, emp) => acc + emp.valorParcela, 0);
+        const liquido = bruto - inss - irrf - totalEmprestimos;
+        const transacoes = [];
+        emprestimos.forEach(emp => {
+            transacoes.push({ 
+                tipo: 'EMPRESTIMO_CONSIGNADO',
+                descricao: `Desc. Empréstimo: ${emp.nome}`, 
+                valor: emp.valorParcela, 
+                idEmprestimoRelacionado: emp.id 
+            });
+        });
+
+        return { bruto, inss, irrf, totalEmprestimos, liquido, transacoes };
+    }
+    const APP_VERSION = 'v1.0.0'
+    const CHANGELOG = [
+        {
+            version: 'v1.0.0',
+            date: '12/01/2026',
+            title: 'Lançamento Oficial (Beta Pública)',
+            items: [
+                'Início do ciclo oficial v1.0.',
+                'Sistema consolidado com Gestão, Renda e Investimentos.',
+                'Integração completa de Ouvidoria, Feedback e Terminal.',
+                'Segurança de dados e funcionalidade 100% Offline.'
+            ]
+        },
+        {
+            version: 'Fase Beta',
+            date: 'Jan/2026',
+            title: 'Histórico de Desenvolvimento',
+            items: [
+                'Ajustes de Segurança: Reset individual e proteção de dados.',
+                'Correções: Cálculo de INSS/IRRF no holerite.',
+                'Novidades: Simulador de Juros, Gráficos e Terminal de Comandos.',
+                'Base: Criação do sistema de Backup JSON e Temas.'
+            ]
+        }
+    ];
+
+    const Updates = {
+        init: () => {
+            document.getElementById('appVersionDisplay').innerText = APP_VERSION;
+            const lastSeenVersion = StorageManager.load('capitalis_last_version');
+            const tutorialDone = StorageManager.load('capitalis_tutorial_version');
+            Updates.renderList();
+            if (tutorialDone && lastSeenVersion !== APP_VERSION) {
+                setTimeout(() => {
+                    document.getElementById('updatesModal').style.display = 'flex';
+                    StorageManager.save('capitalis_last_version', APP_VERSION);
+                }, 1000);
+            } else if (!lastSeenVersion) {
+                StorageManager.save('capitalis_last_version', APP_VERSION);
+            }
+        },
+
+        renderList: () => {
+            const container = document.getElementById('updatesTimeline');
+            container.innerHTML = '';
+
+            CHANGELOG.forEach((log, index) => {
+                const isLatest = index === 0;
+                
+                let html = `
+                <div class="timeline-item ${isLatest ? 'latest' : ''}">
+                    <div class="timeline-dot"></div>
+                    <div class="version-title">
+                        ${log.version} 
+                        ${isLatest ? '<span class="badge-new">NOVO</span>' : ''}
+                    </div>
+                    <span class="version-date">${log.date} - ${log.title}</span>
+                    <div class="version-desc">
+                        <ul>
+                            ${log.items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>`;
+                container.innerHTML += html;
+            });
+        },
+
+        openHistory: () => {
+            document.getElementById('updatesModal').style.display = 'flex';
+        }
+    };
+        const Feedback = {
+        trackAction: () => {
+            if(StorageManager.load('has_rated') === 'true') return;
+            let count = parseInt(StorageManager.load('action_counter') || 0);
+            count++;
+            StorageManager.save('action_counter', count);
+            if(count === 3) {
+                setTimeout(() => {
+                    document.getElementById('feedbackModal').style.display = 'flex';
+                }, 1500); 
+            }
+        },
+
+        showInput: () => {
+            document.getElementById('feedbackComment').style.display = 'block';
+        },
+
+        send: () => {
+            const starEl = document.querySelector('input[name="rating"]:checked');
+            if(!starEl) return alert("Por favor, selecione as estrelas primeiro!");
+            
+            const stars = starEl.value;
+            const text = document.getElementById('feedbackText').value;
+            
+            Logger.log('Avaliação', `⭐ ${stars} Estrelas - Msg: ${text}`);
+            
+            alert('Recebemos seu feedback. A equipe Capitalis agradece!');
+            StorageManager.save('has_rated', 'true'); 
+            closeModal('feedbackModal');
+        },
+
+        later: () => {
+            localStorage.setItem('capitalis_action_counter', 0);
+            document.getElementById('feedbackModal').style.display = 'none';
+        },
+
+        forceTest: () => {
+            localStorage.removeItem('capitalis_rated');
+            localStorage.setItem('capitalis_action_counter', 3);
+            Feedback.trackAction();
+        }
+    };
     
     const StorageManager = {
         getPrefix: () => {
@@ -1455,6 +1797,7 @@
             if(debit) { Finance.add(`Aporte: ${name}`, amount, 'Investimento'); }
             closeModal('investAddModal');
             Logger.log('Novo investimento', `${name} - R$ ${amount}`);
+            Feedback.trackAction();
         },
         remove: (id) => { if(confirm('Deseja remover seu investimento?')) Invest.save(Invest.getData().filter(i => i.id !== id)); },
         getIcon: (type) => { switch(type) { case 'Renda Fixa': return '<i class="bi bi-graph-up-arrow"></i>'; case 'Ações': return '<i class="bi bi-building"></i>'; case 'Cripto': return '<i class="bi bi-currency-bitcoin"></i>'; case 'Reserva': return '<i class="bi bi-shield-check"></i>'; default: return '<i class="bi bi-wallet2"></i>'; } },
@@ -1730,6 +2073,8 @@
                     StorageManager.save('capitalis_debts', list);
                     renderStrategy(); Assets.render(); 
                     if(typeof renderFinance === 'function') renderFinance();
+
+                    Feedback.trackAction();
                 }
             }
         },
@@ -1787,44 +2132,74 @@
         print: (msg, type = 'sys') => { const term = document.getElementById('assistTerminal'); const div = document.createElement('div'); div.className = 'msg-' + type; div.innerHTML = msg; term.appendChild(div); term.scrollTop = term.scrollHeight; },
         processSalaryCalculation: (grossVal, loansToDeduct, isSimulation) => {
             const allDebts = Debts.getData();
-            if(typeof processarHolerite !== 'function') return Assistant.print('Erro: Lógica financeira ausente.');
             const result = processarHolerite(grossVal, loansToDeduct);
+            
+            // Formatador para Dinheiro
+            const fmt = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
             let msg = '';
-            if(isSimulation) { msg = `<strong>Simulação de Salário</strong><br>`; } 
-            else {
+            if(isSimulation) { 
+                msg = `<strong>🧮 Simulação de Salário</strong><br>`; 
+            } else {
+                // SALVA O LÍQUIDO NOVO
                 StorageManager.save('capitalis_fixed_salary', result.liquido);
-                msg = `<strong>Salário fixo mensal registrado com sucesso!</strong><br>`;
+                
+                msg = `<strong>✅ Salário fixo atualizado!</strong><br>`;
+
                 result.transacoes.forEach(t => {
-                    let finalVal = t.valor;
-                    if(t.tipo === 'DESPESA') finalVal = finalVal * -1;
-                    const foiDescontadoNaFolha = loansToDeduct.some(l => l.id === t.idEmprestimoRelacionado);
-                    if (!foiDescontadoNaFolha) { Finance.add(t.descricao, finalVal, t.categoria); }
                     if (t.idEmprestimoRelacionado) {
                         const debt = allDebts.find(d => d.id === t.idEmprestimoRelacionado);
                         if (debt) {
                             debt.lastPaid = new Date().toISOString().slice(0, 7); 
-                            if(debt.installments) { debt.installments.current = parseInt(debt.installments.current) + 1; }
+                            if(debt.installments) { 
+                                debt.installments.current = parseInt(debt.installments.current) + 1; 
+                            }
                         }
                     }
                 });
                 StorageManager.save('capitalis_debts', allDebts);
                 Assets.render();
             }
-            msg += `<small>Bruto: R$ ${result.bruto.toLocaleString('pt-BR')} | INSS: -R$ ${result.inss.toLocaleString('pt-BR')}</small><br>`;
-            if (result.totalEmprestimos > 0) { msg += `<small>Empréstimos descontados: -R$ ${result.totalEmprestimos.toLocaleString('pt-BR')}</small><br>`; } 
-            else { msg += `<small>Empréstimos: Não descontados.</small><br>`; }
-            msg += `💰 <strong>Líquido: R$ ${result.liquido.toLocaleString('pt-BR')}</strong><br>`;
-            msg += `------------------------------<br>`;
-            if(isSimulation) {
-                const currentMonth = new Date().toISOString().slice(0, 7);
-                const pendingBills = allDebts.filter(d => d.type !== 'loan' && d.lastPaid !== currentMonth).reduce((acc, d) => acc + d.amount, 0);
-                const balanceAfterBills = result.liquido - pendingBills;
-                msg += `Se este fosse seu salário, após pagar as contas pendentes (R$ ${pendingBills.toLocaleString('pt-BR')}), sobraria: <strong>R$ ${balanceAfterBills.toLocaleString('pt-BR')}</strong>`;
+
+            msg += `<small>Salário Bruto: R$ ${fmt(result.bruto)}</small><br>`;
+            msg += `<small style="color:var(--danger)">(-) INSS: R$ ${fmt(result.inss)}</small><br>`;
+            
+            if(result.irrf > 0) {
+                msg += `<small style="color:var(--danger)">(-) IRRF: R$ ${fmt(result.irrf)}</small><br>`;
             }
+
+            if (result.totalEmprestimos > 0) { 
+                msg += `<small style="color:var(--warning)">(-) Empréstimos: R$ ${fmt(result.totalEmprestimos)}</small><br>`; 
+            }
+
+            msg += `------------------------------<br>`;
+            msg += `💰 <strong>Líquido (Base): R$ ${fmt(result.liquido)}</strong><br><br>`;
+            
+            if(!isSimulation) {
+                const transactions = Finance.getData();
+                const currentMonth = new Date().toISOString().slice(0, 7);
+                const gastosMes = Math.abs(transactions
+                    .filter(t => t.date.startsWith(currentMonth) && t.amount < 0)
+                    .reduce((acc, t) => acc + t.amount, 0));
+                
+                const saldoFinal = result.liquido - gastosMes;
+
+                msg += `<em>Resumo do Caixa:</em><br>`;
+                msg += `<small>+ Líquido: R$ ${fmt(result.liquido)}</small><br>`;
+                msg += `<small style="color:var(--danger)">- Gastos já lançados: R$ ${fmt(gastosMes)}</small><br>`;
+                msg += `<strong>= Saldo Atual: R$ ${fmt(saldoFinal)}</strong>`;
+            }
+
             Assistant.print(msg, isSimulation ? 'info' : 'success');
+            
             if(!isSimulation && typeof renderStrategy === 'function') renderStrategy();
-            if(isSimulation) { Assistant.appendActions([{ text: 'Limpar Simulação', action: "clear_chat" }, { text: 'Menu', action: "menu" }]); } 
-            else { Assistant.showMainMenu(); }
+            
+            if(isSimulation) { 
+                Assistant.appendActions([{ text: 'Limpar', action: "clear_chat" }, { text: 'Menu', action: "menu" }]); 
+            } else { 
+                if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
+                Assistant.showMainMenu(); 
+            }
         },
         processInput: (text) => {
             const lower = text.toLowerCase().trim();
@@ -2065,9 +2440,15 @@
             if (keysToRemove.length > 0) {
                 keysToRemove.forEach(k => localStorage.removeItem(k));
             }
+            const session = JSON.parse(sessionStorage.getItem('capitalis_session'));
+            if(session && session.user) {
+                let usersDB = JSON.parse(localStorage.getItem('capitalis_users_db') || '[]');
+                usersDB = usersDB.filter(u => u.user.toLowerCase() !== session.user.toLowerCase());
+                localStorage.setItem('capitalis_users_db', JSON.stringify(usersDB));
+            }
             sessionStorage.removeItem('capitalis_session');
-            alert('Sua conta foi apagada com sucesso.');
-            window.location.replace('redir.html'); 
+            alert('Sua conta foi apagada com sucesso. Os outros usuários do dispositivo permanecem intactos.');
+            window.location.replace('index.html'); 
         }
     };
 
@@ -2111,7 +2492,7 @@
 
     const Income = {
         getData: () => StorageManager.load('capitalis_income') || [],
-        save: () => { const date = document.getElementById('incDate').value; const company = Security.sanitize(document.getElementById('incCompany').value); const role = Security.sanitize(document.getElementById('incRole').value); const grossInput = document.getElementById('incGross').value; const netInput = document.getElementById('incNet').value; const status = document.getElementById('incStatus').value; if (!date || !grossInput) return alert('Preencha os dados.'); Logger.log('Nova Renda', `${company} - R$ ${netInput}`); const data = Income.getData(); data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); StorageManager.save('capitalis_income', data); renderIncome(); closeModal('incomeModal'); },
+        save: () => { const date = document.getElementById('incDate').value; const company = Security.sanitize(document.getElementById('incCompany').value); const role = Security.sanitize(document.getElementById('incRole').value); const grossInput = document.getElementById('incGross').value; const netInput = document.getElementById('incNet').value; const status = document.getElementById('incStatus').value; if (!date || !grossInput) return alert('Preencha os dados.'); Logger.log('Nova Renda', `${company} - R$ ${netInput}`); const data = Income.getData(); data.push({ id: Date.now(), date, company, role, type: 'Salário', gross: parseMoneyInput(grossInput), net: parseMoneyInput(netInput), status }); StorageManager.save('capitalis_income', data); renderIncome(); closeModal('incomeModal'); Feedback.trackAction(); },
         remove: (id) => { if(confirm('Deseja excluir?')) { StorageManager.save('capitalis_income', Income.getData().filter(i => i.id !== id)); renderIncome(); } },
         markAsPaid: (id) => { if(confirm('Confirmar recebimento de nova renda?')) { const data = Income.getData(); const item = data.find(i => i.id === id); if(item) { item.status = 'Pago'; StorageManager.save('capitalis_income', data); renderIncome(); } } }
     };
@@ -2250,7 +2631,9 @@
              return alert(`Operação cancelada!\n\nSeu saldo atual é de R$ ${saldoAtual.toLocaleString('pt-BR')}.\nVocê tentou gastar R$ ${Math.abs(val).toLocaleString('pt-BR')}.\n\nAdicione fundos (Renda/Salário) antes de gastar.`);
         }
 
-        Finance.add(desc, val, cat); 
+        Finance.add(desc, val, cat);
+        
+        Feedback.trackAction();
     }
 
     window.addEventListener("beforeunload", () => StorageManager.emergencySave());
@@ -2268,6 +2651,8 @@
         Debts.checkNotifications(); 
         Assistant.init(); 
         Security.autoLock(); 
+
+        Updates.init();
         
         const showedTutorial = Tutorial.init();
         if (!showedTutorial) {
