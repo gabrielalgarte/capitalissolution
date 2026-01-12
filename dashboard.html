@@ -1338,8 +1338,18 @@
 
         return { bruto, inss, irrf, totalEmprestimos, liquido, transacoes };
     }
-    const APP_VERSION = 'v1.0.0'
+    const APP_VERSION = 'v1.0.1'
     const CHANGELOG = [
+      {
+            version: 'v1.0.1',
+            date: '12/01/2026',
+            title: 'Melhorias de usabilidade',
+            items: [
+                'Ajuste na sensibilidade do scroll durante a leitura dos termos de uso.',
+                'Bloqueio de atualização acidental (pull-to-push) durante o tutorial e janelas abertas.',
+                'Otimização da navegação em dispositivos móveis.'
+            ]
+        },
         {
             version: 'v1.0.0',
             date: '12/01/2026',
@@ -1615,15 +1625,23 @@
     const mainContent = document.getElementById('mainContent'); 
     const ptrLoader = document.getElementById('ptr-loader'); 
     const ptrSpinner = document.getElementById('ptr-spinner');
+    const isLocked = () => {
+        if(document.getElementById('view-tools').classList.contains('active-view')) return true;
+        if(document.body.classList.contains('tutorial-active')) return true;
+        if(document.querySelector('.modal-overlay[style*="flex"]') || document.querySelector('.custom-modal-overlay.active')) return true;
+        
+        return false;
+    };
 
     window.addEventListener('touchstart', (e) => { 
-        if(document.getElementById('view-tools').classList.contains('active-view')) return;
+        if(isLocked()) return;
         if (window.scrollY === 0) { startY = e.touches[0].pageY; isPulling = true; } 
     }, {passive: true});
 
     window.addEventListener('touchmove', (e) => { 
         if (!isPulling) return; 
-        if(document.getElementById('view-tools').classList.contains('active-view')) return;
+        if(isLocked()) { isPulling = false; return; }
+
         const y = e.touches[0].pageY; const diff = y - startY; 
         if (diff > 50 && window.scrollY === 0) { 
             const move = Math.min((diff - 50) * 0.25, 200); 
@@ -2133,18 +2151,15 @@
         processSalaryCalculation: (grossVal, loansToDeduct, isSimulation) => {
             const allDebts = Debts.getData();
             const result = processarHolerite(grossVal, loansToDeduct);
-            
-            // Formatador para Dinheiro
             const fmt = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             let msg = '';
             if(isSimulation) { 
                 msg = `<strong>🧮 Simulação de Salário</strong><br>`; 
             } else {
-                // SALVA O LÍQUIDO NOVO
                 StorageManager.save('capitalis_fixed_salary', result.liquido);
                 
-                msg = `<strong>✅ Salário fixo atualizado!</strong><br>`;
+                msg = `<strong>Salário fixo atualizado!</strong><br>`;
 
                 result.transacoes.forEach(t => {
                     if (t.idEmprestimoRelacionado) {
@@ -2173,7 +2188,7 @@
             }
 
             msg += `------------------------------<br>`;
-            msg += `💰 <strong>Líquido (Base): R$ ${fmt(result.liquido)}</strong><br><br>`;
+            msg += `<strong>Líquido (Base): R$ ${fmt(result.liquido)}</strong><br><br>`;
             
             if(!isSimulation) {
                 const transactions = Finance.getData();
