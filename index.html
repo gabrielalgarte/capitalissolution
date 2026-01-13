@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
-        /* --- VARIÁVEIS GLOBAIS --- */
         :root {
             --bg-dark: #050505; 
             --primary: #2F81F7; 
@@ -24,8 +23,7 @@
             --bg-card: #0d1117;
             --border-color: #30363d;
             --success: #238636;
-            
-            /* Footer Ultra Premium */
+
             --glass-footer: rgba(5, 5, 5, 0.4); 
             --glass-footer-border: rgba(255, 255, 255, 0.06);
         }
@@ -49,7 +47,6 @@
             --glass-footer-border: rgba(0, 0, 0, 0.05);
         }
 
-        /* --- RESET BÁSICO --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         html, body { 
@@ -72,8 +69,7 @@
         }
         
         body.light-mode { background: var(--bg-dark); }
-        
-        /* --- ANIMAÇÃO DE FUNDO --- */
+
         body::before { 
             content: ''; position: absolute; width: 600px; height: 600px; 
             background: radial-gradient(circle, rgba(0, 102, 255, 0.1), transparent 70%); 
@@ -91,15 +87,14 @@
         body.light-mode::before, body.light-mode::after { opacity: 0; }
         
         @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
-        
-        /* --- CONTAINER LOGIN --- */
+
         .container { 
             position: relative; z-index: 10; width: 100%; max-width: 1000px; 
             display: flex; box-shadow: 0 25px 50px -12px var(--shadow-color); 
             border-radius: 24px; border: 1px solid var(--glass-border); 
             backdrop-filter: blur(20px); background: var(--glass); 
             overflow: hidden; min-height: 600px; transition: all 0.5s ease; 
-            margin-bottom: 90px; /* Espaço para o footer */
+            margin-bottom: 90px;
         }
         
         body.light-mode .container { box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-color: transparent; }
@@ -243,7 +238,6 @@
         .modal-content-scroll::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 4px; border: 2px solid var(--bg-dark); }
         .modal-content-scroll::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* --- STYLES FOR CHANGELOG TIMELINE --- */
         .timeline { position: relative; padding-left: 20px; border-left: 2px solid var(--border-color); margin-top: 10px; }
         .timeline-item { margin-bottom: 30px; position: relative; }
         .timeline-item:last-child { margin-bottom: 0; }
@@ -313,7 +307,7 @@
             </div>
 
             <div id="loginSection" class="form-container">
-                <h2 id="formTitle">Bem-vindo</h2>
+                <h2 id="formTitle">Bem-vindo(a)</h2>
                 <span class="sub-text" id="formSubtitle">Acesse o painel financeiro.</span>
                 
                 <form id="authForm">
@@ -351,14 +345,14 @@
             <a href="https://integrux.dev/" target="_blank" class="integrux-badge">
                 Desenvolvido por <strong>Integrux</strong>
             </a>
-            <span class="version-badge" onclick="openChangelogModal()" title="Histórico de Versões">v1.0.1</span>
+            <span class="version-badge" onclick="openChangelogModal()" title="Histórico de Versões">v1.0.0</span>
         </div>
 
         <div class="footer-right">
             <a href="https://www.instagram.com/integrux?igsh=MTBveGZreTBmM3E3MA==" target="_blank" class="footer-link" title="Instagram">
                 <i class="bi bi-instagram"></i>
             </a>
-            <a onclick="openOuvidoriaModal()" class="footer-link">Ouvidoria</a>
+            <a onclick="openOuvidoriaModal()" class="footer-link">SAC</a>
             <a onclick="openTermsModal()" class="footer-link">Termos</a>
         </div>
 
@@ -367,7 +361,7 @@
     <div id="changelogModal" class="custom-modal-overlay">
         <div class="custom-modal-container">
             <div class="modal-header">
-                <span class="modal-title"><i class="bi bi-clock-history" style="color: var(--primary);"></i> Histórico de Versões</span>
+                <span class="modal-title"><i class="bi bi-clock-history" style="color: var(--primary);"></i> Histórico de versões</span>
                 <button class="modal-close-btn" onclick="closeChangelogModal()"><i class="bi bi-x-lg"></i></button>
             </div>
             <div class="modal-content-scroll">
@@ -396,7 +390,7 @@
                 <label style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display:block;">Tipo de solicitação</label>
                 <select id="ouvType" class="select-dark">
                     <option value="Sugestão">💡 Sugestão de melhoria</option>
-                    <option value="Reclamação">⚠️ Reclamação / Reportar erro</option>
+                    <option value="Reclamação">⚠️ Reclamação / Reportar bug visual</option>
                     <option value="Suporte">🔧 Suporte técnico</option>
                     <option value="Comercial">💼 Contato comercial</option>
                 </select>
@@ -467,56 +461,45 @@
     </div>
 
     <script>
-        const CHANGELOG = [
-                  {
-            version: 'v1.0.1',
-            date: '12/01/2026',
-            title: 'Melhorias de usabilidade',
-            items: [
-                'Ajuste na sensibilidade do scroll durante a leitura dos termos de uso.',
-                'Bloqueio de atualização acidental (pull-to-push) durante o tutorial e janelas abertas.',
-                'Otimização da navegação em dispositivos móveis.'
-            ]
-        },
-      {
+    const CHANGELOG = [
+        {
             version: 'v1.0.0',
             date: '12/01/2026',
-            title: 'Lançamento Oficial (Beta Pública)',
+            title: 'Lançamento oficial da beta',
             items: [
-                'Início do ciclo oficial v1.0.',
-                'Sistema consolidado com Gestão, Renda e Investimentos.',
-                'Integração completa de Ouvidoria, Feedback e Terminal.',
-                'Segurança de dados e funcionalidade 100% Offline.'
+                'Lançamento da versão estável do Capitalis Solution.',
+                'Melhorias de UX: Ajuste na sensibilidade do scroll nos Termos de Uso.',
+                'Estabilidade: Bloqueio de atualização acidental (pull-to-push) durante tutoriais e modais.',
+                'Otimização completa da navegação para dispositivos móveis.',
+                'Integração final dos módulos de Ouvidoria e Feedback.'
             ]
         },
         {
-            version: 'Fase Beta',
+            version: 'v0.9.0 (Beta)',
             date: 'Jan/2026',
-            title: 'Histórico de Desenvolvimento',
+            title: 'Fase de desenvolvimento versão beta',
             items: [
-                'Ajustes de Segurança: Reset individual e proteção de dados.',
-                'Correções: Cálculo de INSS/IRRF no holerite.',
-                'Novidades: Simulador de Juros, Gráficos e Terminal de Comandos.',
-                'Base: Criação do sistema de Backup JSON e Temas.'
+                'Implementação do cálculo automático de holerite (INSS/IRRF).',
+                'Criação do assistente virtual e terminal de comandos.',
+                'Sistema de backup JSON e restauração de dados.',
+                'Definição da arquitetura offline-first para privacidade total.',
+                'Simulador de juros compostos e metas.'
             ]
         }
-        ];
+    ];
 
         function openChangelogModal() {
             const list = document.getElementById('changelogList');
-            list.innerHTML = ''; // Limpa antes de renderizar
+            list.innerHTML = ''; 
 
             CHANGELOG.forEach((log, index) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'timeline-item';
-                
-                // Monta a lista de itens (bullets)
+
                 let itemsHtml = '<ul class="v-list">';
                 log.items.forEach(i => { itemsHtml += `<li>${i}</li>` });
                 itemsHtml += '</ul>';
 
-                // Verifica se é a última versão (primeira do array) para adicionar destaque se quiser
-                // Neste caso, vou adicionar apenas a data e versão
                 itemDiv.innerHTML = `
                     <div class="timeline-dot"></div>
                     <div class="version-header">
@@ -552,8 +535,6 @@
         
         function openOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.add('active'); }
         function closeOuvidoriaModal() { document.getElementById('ouvidoriaModal').classList.remove('active'); }
-
-        // function showVersionInfo() retirado, pois agora abre o modal
         
         function sendOuvidoria() {
             const name = document.getElementById('ouvName').value.trim();
@@ -590,7 +571,7 @@
             .then(response => response.json())
             .then(data => {
                 closeOuvidoriaModal();
-                showToast("Mensagem enviada com sucesso! Em breve retornaremos.", false);
+                showToast("Recebemos seu feedback com sucesso! A equipe Capitalis agradece.", false);
                 msgInput.value = ''; 
                 document.getElementById('ouvName').value = '';
                 document.getElementById('ouvContact').value = '';
