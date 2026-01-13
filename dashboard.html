@@ -564,7 +564,7 @@
         }
         .version-pill {
             position: fixed;
-            bottom: 15px;
+            bottom: 55px;
             left: 15px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -1340,41 +1340,35 @@
 
         return { bruto, inss, irrf, totalEmprestimos, liquido, transacoes };
     }
-    const APP_VERSION = 'v1.0.1'
+    const APP_VERSION = 'v1.0.0';
+
     const CHANGELOG = [
-      {
-            version: 'v1.0.1',
-            date: '12/01/2026',
-            title: 'Melhorias de usabilidade',
-            items: [
-                'Ajuste na sensibilidade do scroll durante a leitura dos termos de uso.',
-                'Bloqueio de atualização acidental (pull-to-push) durante o tutorial e janelas abertas.',
-                'Otimização da navegação em dispositivos móveis.'
-            ]
-        },
         {
             version: 'v1.0.0',
             date: '12/01/2026',
-            title: 'Lançamento Oficial (Beta Pública)',
+            title: 'Lançamento oficial da beta',
             items: [
-                'Início do ciclo oficial v1.0.',
-                'Sistema consolidado com Gestão, Renda e Investimentos.',
-                'Integração completa de Ouvidoria, Feedback e Terminal.',
-                'Segurança de dados e funcionalidade 100% Offline.'
+                'Lançamento da versão estável do Capitalis Solution.',
+                'Melhorias de UX: Ajuste na sensibilidade do scroll nos Termos de Uso.',
+                'Estabilidade: Bloqueio de atualização acidental (pull-to-push) durante tutoriais e modais.',
+                'Otimização completa da navegação para dispositivos móveis.',
+                'Integração final dos módulos de Ouvidoria e Feedback.'
             ]
         },
         {
-            version: 'Fase Beta',
+            version: 'v0.9.0 (Beta)',
             date: 'Jan/2026',
-            title: 'Histórico de Desenvolvimento',
+            title: 'Fase de desenvolvimento versão beta',
             items: [
-                'Ajustes de Segurança: Reset individual e proteção de dados.',
-                'Correções: Cálculo de INSS/IRRF no holerite.',
-                'Novidades: Simulador de Juros, Gráficos e Terminal de Comandos.',
-                'Base: Criação do sistema de Backup JSON e Temas.'
+                'Implementação do cálculo automático de holerite (INSS/IRRF).',
+                'Criação do assistente virtual e terminal de comandos.',
+                'Sistema de backup JSON e restauração de dados.',
+                'Definição da arquitetura offline-first para privacidade total.',
+                'Simulador de juros compostos e metas.'
             ]
         }
     ];
+    
 
     const Updates = {
         init: () => {
@@ -1568,40 +1562,69 @@
                 document.getElementById('timeRemaining').innerText = "Expirado";
                 const badge = document.getElementById('freeTimerBadge');
                 if(badge) {
-                    badge.style.borderColor = 'var(--text-muted)';
-                    badge.style.color = 'var(--text-muted)';
+                    badge.style.borderColor = 'var(--danger)';
+                    badge.style.color = 'var(--danger)';
                 }
             }
         },
         validateAction: () => {
             const expiry = StorageManager.load('capitalis_access_expiry');
             const now = Date.now();
+
             if (!expiry || now > parseInt(expiry)) {
                 AdSystem.lockScreen(); 
-                return false;
+                return false; 
             }
-            return true;
+            return true; 
         },
+
         lockScreen: () => {
             const title = document.querySelector('#adLockOverlay h2');
             const desc = document.querySelector('#adLockOverlay p');
-            if(title) title.innerText = "Ação Bloqueada";
-            if(desc) desc.innerHTML = "Para salvar novos registros e usar o assistente, você precisa de tempo ativo.<br>Assista a um breve anúncio para liberar <strong>12 horas de uso ilimitado</strong>.";
+            
+            if(title) title.innerHTML = "Liberar acesso gratuito!";
+            if(desc) desc.innerHTML = "O seu período de acesso gratuito encerrou.<br><br>Para continuar usando o <strong>Capitalis</strong> e apoiar nosso projeto, precisamos que você <strong>assista a um breve vídeo com duração de (30s)</strong>.<br><br>Com isso, será liberada 12 horas gratuitas para você no painel. Fique tranquilo, acabou o tempo? Assista um novo anúncio.";
+
+            const btn = document.getElementById('btnWatchAd');
+            const bar = document.getElementById('adProgressBar');
+            const txt = document.getElementById('adStatusText');
+
+            if(btn) { btn.style.display = 'flex'; btn.disabled = false; }
+            if(bar) { bar.style.display = 'none'; }
+            if(txt) { txt.style.display = 'none'; }
 
             document.getElementById('adLockOverlay').style.display = 'flex';
+            document.getElementById('timeRemaining').innerText = "Expirado";
+            const badge = document.getElementById('freeTimerBadge');
+            if(badge) {
+                badge.style.borderColor = 'var(--danger)';
+                badge.style.color = 'var(--danger)';
+            }
         },
+
+        checkAccess: () => {
+            const expiry = StorageManager.load('capitalis_access_expiry'); 
+            const now = Date.now();
+            if (!expiry || now > parseInt(expiry)) {
+                document.getElementById('timeRemaining').innerText = "Expirado";
+            } else {
+                AdSystem.startTimer(parseInt(expiry));
+            }
+        },
+
         unlockScreen: () => {
             document.getElementById('adLockOverlay').style.display = 'none';
         },
+
         watchAd: () => {
             const btn = document.getElementById('btnWatchAd');
             const bar = document.getElementById('adProgressBar');
             const fill = document.getElementById('adProgressFill');
             const txt = document.getElementById('adStatusText');
-
             btn.style.display = 'none';
             bar.style.display = 'block';
             txt.style.display = 'block';
+            fill.style.width = '0%';
 
             if (window.admob) {
                 AdSystem.simulateAd(fill);
@@ -1609,6 +1632,7 @@
                 AdSystem.simulateAd(fill);
             }
         },
+
         simulateAd: (fillElement) => {
             let width = 0;
             const interval = setInterval(() => {
@@ -1620,13 +1644,16 @@
                 }
             }, 100); 
         },
+
         grantAccess: () => {
-            const accessTime = 43200000;
+            const accessTime = 43200000; 
             const expiry = Date.now() + accessTime; 
             StorageManager.save('capitalis_access_expiry', expiry);
-            alert("Parabéns! 12 horas liberadas. Pode repetir sua ação agora.");
+            
+            alert("Obrigado pelo apoio! Acesso liberado por mais 12 horas.");
             location.reload(); 
         },
+
         startTimer: (expiryTime) => {
             const el = document.getElementById('timeRemaining');
             const badge = document.getElementById('freeTimerBadge');
@@ -1636,7 +1663,6 @@
             window.adTimerInterval = setInterval(() => {
                 const now = Date.now();
                 const diff = expiryTime - now;
-
                 if (diff <= 0) {
                     el.innerText = "Expirado";
                     if(badge) {
@@ -1736,8 +1762,8 @@
                     html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>, seja bem-vindo ao painel financeiro da Capitalis Solution. Vamos fazer um tour pelo aplicativo?</p>`; 
                     break;
                 case 1: viewToSwitch = 'finance'; html = `<div class="tutorial-header"><h2><i class="bi bi-cash-coin"></i> Gestão de Gastos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Nessa aba você poderá controlar seus gastos, extratos completos de despesas e muito mais!</p>`; break;
-                case 2: viewToSwitch = 'income'; html = `<div class="tutorial-header"><h2><i class="bi bi-graph-up-arrow"></i> Minha Renda</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Você pode adicionar novas rendas, e acompanhar tanto por gráfico.</p>`; break;
-                case 3: viewToSwitch = 'invest'; html = `<div class="tutorial-header"><h2><i class="bi bi-rocket-takeoff"></i> Investimentos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Acesse o painel de Investimentos para monitorar sua carteira de ativos e reservas financeiras.</p>`; break;
+                case 2: viewToSwitch = 'income'; html = `<div class="tutorial-header"><h2><i class="bi bi-graph-up-arrow"></i> Minha Renda</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Você pode adicionar novas rendas, com acompanhamentos por gráficos, com soma de todos os meses trabalhados.</p>`; break;
+                case 3: viewToSwitch = 'invest'; html = `<div class="tutorial-header"><h2><i class="bi bi-rocket-takeoff"></i> Investimentos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Acesse a aba de investimento para monitorar sua carteira de ativos e reservas financeiras.</p>`; break;
                 case 4: viewToSwitch = 'assets'; html = `<div class="tutorial-header"><h2><i class="bi bi-bank"></i> Patrimônio</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Em Patrimônio, você tem a visão global de bens duráveis e o controle de empréstimos ativos.</p>`; break;
                 case 5: viewToSwitch = 'strategy'; html = `<div class="tutorial-header"><h2><i class="bi bi-clipboard-data"></i> Estratégia</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Defina metas de sobra mensal e organize a prioridade de pagamentos.</p>`; break;
                 case 6: viewToSwitch = 'tools'; html = `<div class="tutorial-header"><h2><i class="bi bi-terminal"></i> Terminal Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Interaja com o Assistente Virtual para automação de processos financeiros.</p>`; break;
@@ -1765,7 +1791,7 @@
             container.innerHTML = html + dots + btn;
         },
         skip: () => { 
-            if(confirm("Ao pular o tutorial, você declara que LEU e CONCORDA automaticamente com os Termos de Uso e Política de Privacidade do Capitalis.\n\nDeseja continuar?")) {
+            if(confirm("Caso concorde em pular o tutorial, você irá aceitar os termos de política e privacidade do usuário.\n\nDeseja mesmo continuar?")) {
                 Tutorial.acceptTerms(); 
             }
         },
@@ -2130,53 +2156,136 @@
     };
 
     const Debts = {
-        tempId: null, getData: () => StorageManager.load('capitalis_debts') || [], getDismissed: () => JSON.parse(sessionStorage.getItem('capitalis_dismissed')) || [],
+        tempId: null, 
+        getData: () => StorageManager.load('capitalis_debts') || [], 
+        getDismissed: () => JSON.parse(sessionStorage.getItem('capitalis_dismissed')) || [],
+        
         add: (name, amount, type, dueDay, installments, installmentValue = 0) => {
-            const safeName = Security.sanitize(name); const list = Debts.getData(); if(list.find(d => d.name.toLowerCase() === safeName.toLowerCase())) return alert('Já existe uma conta com esse ID!');
-            list.push({ id: Date.now(), name: safeName, amount: parseMoneyInput(amount), type, dueDay: parseInt(dueDay), installments, installmentValue: parseMoneyInput(installmentValue), lastPaid: null }); StorageManager.save('capitalis_debts', list); renderStrategy(); Assets.render(); closeModal('debtModal'); Logger.log('Nova Conta', `${safeName} (${type})`); return true;
+            const safeName = Security.sanitize(name); 
+            const list = Debts.getData(); 
+            if(list.find(d => d.name.toLowerCase() === safeName.toLowerCase())) return alert('Já existe uma conta com esse ID!');
+            
+            list.push({ 
+                id: Date.now(), 
+                name: safeName, 
+                amount: parseMoneyInput(amount), 
+                type, 
+                dueDay: parseInt(dueDay), 
+                installments, 
+                installmentValue: parseMoneyInput(installmentValue), 
+                lastPaid: null 
+            }); 
+            
+            StorageManager.save('capitalis_debts', list); 
+            renderStrategy(); 
+            Assets.render(); 
+            closeModal('debtModal'); 
+            Logger.log('Nova Conta', `${safeName} (${type})`); 
+            return true;
         },
+
         pay: (id) => { 
+            if(!AdSystem.validateAction()) return;
+
             const list = Debts.getData();
             const item = list.find(d => d.id === id);
+            
             if(item) {
                 const saldoAtual = Assistant.getLiquidBalance();
-                if (item.amount > saldoAtual) {
-                    return alert(`Você não tem saldo suficiente em caixa.\n\nVocê precisa de R$ ${item.amount.toLocaleString('pt-BR')} para pagar "${item.name}", mas só tem R$ ${saldoAtual.toLocaleString('pt-BR')} em caixa.`);
+                const valorDebitar = (item.type === 'loan' && item.installmentValue) ? item.installmentValue : item.amount;
+
+                if (valorDebitar > saldoAtual) {
+                    return alert(`Você não tem saldo suficiente em caixa.\n\nNecessário: R$ ${valorDebitar.toLocaleString('pt-BR')}\nDisponível: R$ ${saldoAtual.toLocaleString('pt-BR')}`);
                 }
+
                 if(confirm(`Confirmar pagamento de: ${item.name}?`)) {
-                    Finance.add(`Pagamento: ${item.name}`, item.amount * -1, item.type === 'essential' ? 'Contas' : 'Dívida');
+                    Finance.add(`Pagamento: ${item.name}`, valorDebitar * -1, item.type === 'essential' ? 'Contas' : 'Dívida');
+                    
                     item.lastPaid = new Date().toISOString().slice(0, 7);
+                    
+                    let emprestimoFinalizado = false;
                     if(item.type === 'loan' && item.installments) {
                         item.installments.current = parseInt(item.installments.current) + 1;
-                        if(item.installments.current > item.installments.total) { alert('Parabéns! Empréstimo quitado.'); }
+                        if(item.installments.current >= item.installments.total) {
+                            item.installments.current = item.installments.total; 
+                            emprestimoFinalizado = true;
+                        }
                     }
-                    StorageManager.save('capitalis_debts', list);
-                    renderStrategy(); Assets.render(); 
+
+                    if (emprestimoFinalizado) {
+                        const novaLista = list.filter(d => d.id !== id);
+                        StorageManager.save('capitalis_debts', novaLista);
+                        alert(`Parabéns! O empréstimo "${item.name}" foi totalmente quitado e removido do monitor.`);
+                    } else {
+                        StorageManager.save('capitalis_debts', list);
+                    }
+                    renderStrategy(); 
+                    Assets.render(); 
                     if(typeof renderFinance === 'function') renderFinance();
 
                     Feedback.trackAction();
                 }
             }
         },
-        remove: (id) => { if(confirm('Deseja excluir a conta sem finalizar o pagamento?')) { StorageManager.save('capitalis_debts', Debts.getData().filter(i => i.id !== id)); renderStrategy(); Assets.render(); closeModal('actionModal'); closeModal('notifModal'); Debts.checkNotifications(); } },
-        checkNotifications: () => {
-            const list = Debts.getData(); const dismissed = Debts.getDismissed(); const today = new Date().getDate(); const currentMonth = new Date().toISOString().slice(0, 7);
-            const urgent = list.filter(d => d.type === 'essential' && (d.dueDay - today <= 5) && d.amount > 0 && d.lastPaid !== currentMonth && !dismissed.includes(d.id));
-            const badge = document.getElementById('notifBadge'); const content = document.getElementById('notifContent');
-            if(urgent.length > 0) { badge.classList.add('active'); badge.innerText = urgent.length; content.innerHTML = urgent.map(u => `<div class="notif-item" onclick="Debts.openAction('${u.id}', '${u.name}')"><div style="display:flex; justify-content:space-between;"><div><strong style="color:var(--danger)">${u.name}</strong><br><span style="font-size:0.8rem; color:var(--text-muted)">Vence dia ${u.dueDay}</span></div><div style="font-weight:bold;">R$ ${u.amount}</div></div></div>`).join(''); } 
-            else { badge.classList.remove('active'); badge.innerText = ''; content.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted)">Tudo tranquilo!</div>'; }
-        },
-        openAction: (id, name) => { Debts.tempId = parseInt(id); document.getElementById('actionTitle').innerText = name; closeModal('notifModal'); document.getElementById('actionModal').style.display = 'flex'; },
-        markAsRead: () => { if(!Debts.tempId) return; const list = Debts.getDismissed(); list.push(Debts.tempId); sessionStorage.setItem('capitalis_dismissed', JSON.stringify(list)); closeModal('actionModal'); Debts.checkNotifications(); },
-        deleteFromAction: () => { if(Debts.tempId) Debts.remove(Debts.tempId); }
-    };
 
+        remove: (id) => { 
+            if(confirm('Deseja excluir a conta sem finalizar o pagamento?')) { 
+                StorageManager.save('capitalis_debts', Debts.getData().filter(i => i.id !== id)); 
+                renderStrategy(); 
+                Assets.render(); 
+                closeModal('actionModal'); 
+                closeModal('notifModal'); 
+                Debts.checkNotifications(); 
+            } 
+        },
+
+        checkNotifications: () => {
+            const list = Debts.getData(); 
+            const dismissed = Debts.getDismissed(); 
+            const today = new Date().getDate(); 
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            
+            const urgent = list.filter(d => d.type === 'essential' && (d.dueDay - today <= 5) && d.amount > 0 && d.lastPaid !== currentMonth && !dismissed.includes(d.id));
+            
+            const badge = document.getElementById('notifBadge'); 
+            const content = document.getElementById('notifContent');
+            
+            if(urgent.length > 0) { 
+                badge.classList.add('active'); 
+                badge.innerText = urgent.length; 
+                content.innerHTML = urgent.map(u => `<div class="notif-item" onclick="Debts.openAction('${u.id}', '${u.name}')"><div style="display:flex; justify-content:space-between;"><div><strong style="color:var(--danger)">${u.name}</strong><br><span style="font-size:0.8rem; color:var(--text-muted)">Vence dia ${u.dueDay}</span></div><div style="font-weight:bold;">R$ ${u.amount}</div></div></div>`).join(''); 
+            } else { 
+                badge.classList.remove('active'); 
+                badge.innerText = ''; 
+                content.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted)">Tudo tranquilo!</div>'; 
+            }
+        },
+
+        openAction: (id, name) => { 
+            Debts.tempId = parseInt(id); 
+            document.getElementById('actionTitle').innerText = name; 
+            closeModal('notifModal'); 
+            document.getElementById('actionModal').style.display = 'flex'; 
+        },
+
+        markAsRead: () => { 
+            if(!Debts.tempId) return; 
+            const list = Debts.getDismissed(); 
+            list.push(Debts.tempId); 
+            sessionStorage.setItem('capitalis_dismissed', JSON.stringify(list)); 
+            closeModal('actionModal'); 
+            Debts.checkNotifications(); 
+        },
+
+        deleteFromAction: () => { 
+            if(Debts.tempId) Debts.remove(Debts.tempId); 
+        }
+    };
     const Assistant = {
         state: 'IDLE', tempData: {},
         
         getLiquidBalance: () => {
             const fixedSalary = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
-            
             const transactions = Finance.getData();
             const currentMonth = new Date().toISOString().slice(0, 7); 
             const monthTrans = transactions.filter(t => t.date.startsWith(currentMonth));
@@ -2229,7 +2338,7 @@
             if (liquid <= 0) {
                 msg += `<span style="font-size:0.8rem; color:#ff9800;">Atenção: você está sem saldo. Adicione renda ou salário fixo.</span><br>`;
             }
-            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Capitalis, em que posso te ajudar?`;
+            msg += `Seja bem-vindo(a) ao assistente de pagamentos da Capitalis, clique nos botões abaixo para executar um novo comando.`;
             
             Assistant.print(msg, 'sys');
             Assistant.appendActions([ 
@@ -2283,11 +2392,16 @@
             if(isSimulation) { 
                 msg = `<strong>🧮 Simulação de Salário</strong><br>`; 
             } else {
+                // BARREIRA DE ANÚNCIO (Só se for salvar mesmo)
+                if(!AdSystem.validateAction()) return;
+
                 StorageManager.save('capitalis_fixed_salary', result.liquido);
                 
+                // Cria transação visual
                 Finance.add(`Salário Fixo (Ref. Mês)`, result.liquido, 'Salário');
 
                 msg = `<strong>Salário fixo atualizado e registrado!</strong><br>`;
+                
                 result.transacoes.forEach(t => {
                     if (t.idEmprestimoRelacionado) {
                         const debt = allDebts.find(d => d.id === t.idEmprestimoRelacionado);
@@ -2338,6 +2452,8 @@
             
             if (Assistant.state === 'IDLE') {
                 if (lower === 'pagar') {
+                    if(!AdSystem.validateAction()) return; // BARREIRA
+
                     const liquid = Assistant.getLiquidBalance();
                     if (liquid <= 0) return Assistant.print('Saldo insuficiente para pagar contas.', 'err');
                     
@@ -2355,12 +2471,16 @@
                     return;
                 }
                 if (lower === 'investir') {
+                    if(!AdSystem.validateAction()) return; // BARREIRA
+
                     const liquid = Assistant.getLiquidBalance();
                     if (liquid <= 0) return Assistant.print('Verifique seu saldo antes de continuar.', 'err');
                     Assistant.state = 'WAITING_INVEST_AMOUNT';
                     return Assistant.print(`Saldo livre: <strong>R$ ${liquid.toLocaleString('pt-BR')}</strong>. Quanto investir?`);
                 }
                 if (lower === 'salario') {
+                    if(!AdSystem.validateAction()) return; // BARREIRA
+
                     const currentFixed = parseFloat(StorageManager.load('capitalis_fixed_salary') || 0);
                     Assistant.print(`Salário fixo atual: <strong>R$ ${currentFixed.toLocaleString('pt-BR')}</strong>.`);
                     Assistant.print('O que deseja fazer?', 'sys');
@@ -2371,7 +2491,10 @@
                 if (lower === 'definir_fixo') { Assistant.print('⚠️ <strong>Atenção:</strong> Isso define sua base mensal. Altere apenas se houve mudança real.', 'warn'); Assistant.appendActions([{ text: 'Continuar', action: 'novo_fixo' }, { text: 'Cancelar', action: 'cancelar' }]); return; }
                 if (lower === 'novo_fixo') { Assistant.tempData.isSimulation = false; Assistant.state = 'WAITING_GROSS_SALARY'; return Assistant.print('Digite o novo valor <strong>bruto</strong>:'); }
                 if (lower === 'add_renda_extra') { Assistant.state = 'WAITING_EXTRA_INCOME_DESC'; return Assistant.print('Qual a origem da renda?'); }
+                
                 if (lower === 'add_conta') { 
+                    if(!AdSystem.validateAction()) return; // BARREIRA
+
                     const debts = Debts.getData();
                     let msg = 'Contas já registradas:<br>';
                     if(debts.length > 0) { debts.forEach((d, index) => { msg += `(ID ${index + 1}) ${d.name}<br>`; }); } 
@@ -2420,9 +2543,11 @@
                     if (target) {
                         const liquid = Assistant.getLiquidBalance();
                         if (liquid < target.amount) return Assistant.print(`Saldo insuficiente.`);
+                        
                         Finance.add(`Pagamento: ${target.name}`, target.amount * -1, target.type === 'essential' ? 'Contas' : 'Dívida');
                         target.lastPaid = new Date().toISOString().slice(0, 7);
                         if(target.type === 'loan' && target.installments) target.installments.current++;
+                        
                         StorageManager.save('capitalis_debts', debts);
                         if(typeof renderStrategy === 'function') renderStrategy(); 
                         Assets.render();
@@ -2498,6 +2623,8 @@
             }
 
             if (Assistant.state === 'WAITING_EXTRA_INCOME_VAL') {
+                if(!AdSystem.validateAction()) return; // BARREIRA
+
                 const val = parseMoneyInput(text); if (!val) return Assistant.print('Inválido.');
                 Finance.add(Assistant.tempData.incomeDesc, val, 'Adicionar renda extra');
                 if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
@@ -2533,6 +2660,8 @@
             }
 
             if (Assistant.state === 'WAITING_BILL_DAY') {
+                if(!AdSystem.validateAction()) return; // BARREIRA
+
                 const day = parseInt(text); if(!day || day < 1 || day > 31) return Assistant.print('Dia inválido.');
                 Debts.add(Assistant.tempData.newBillName, Assistant.tempData.newBillVal, 'essential', day, null);
                 if(typeof Feedback !== 'undefined' && Feedback.trackAction) Feedback.trackAction();
@@ -2663,7 +2792,7 @@
     const Income = {
         getData: () => StorageManager.load('capitalis_income') || [],
         save: () => { 
-            if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+            if(!AdSystem.validateAction()) return;
 
             const date = document.getElementById('incDate').value; 
             const company = Security.sanitize(document.getElementById('incCompany').value); 
@@ -2810,7 +2939,7 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function logout() { if(confirm('Deseja sair?')) { sessionStorage.removeItem('capitalis_session'); window.location.href = 'index.html'; } }
     function saveTransaction() { 
-        if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+        if(!AdSystem.validateAction()) return;
 
         const desc = document.getElementById('tDesc').value; 
         let val = parseMoneyInput(document.getElementById('tAmount').value); 
@@ -2830,7 +2959,7 @@
     }
 
     function saveDebt() { 
-        if(!AdSystem.validateAction()) return; // BARREIRA DE ANÚNCIO
+        if(!AdSystem.validateAction()) return;
 
         const name = document.getElementById('dName').value; 
         const amount = document.getElementById('dAmount').value; 
