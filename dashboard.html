@@ -656,6 +656,61 @@
             font-weight: bold;
             border: 1px solid var(--success);
         }
+       /* --- CSS DO TUTORIAL RESPONSIVO --- */
+
+/* --- CSS DE TUTORIAL LIMPO E FOCADO NA NAVBAR --- */
+
+/* 1. O Balão do Tutorial (Fixo e discreto no canto) */
+#tutorialBubble {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 380px;
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    box-shadow: 0 5px 30px rgba(0,0,0,0.5); /* Sombra suave */
+    border-radius: 12px;
+    z-index: 10000; /* Acima de tudo */
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    animation: slideInUp 0.3s ease;
+}
+
+@keyframes slideInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* 2. Comportamento da Navbar durante o Tutorial */
+
+/* Quando o tutorial está ativo, TODOS os itens da navbar ficam quase invisíveis */
+body.tutorial-active .nav-item {
+    opacity: 0.2; 
+    filter: grayscale(100%);
+    transition: all 0.3s ease;
+    pointer-events: none; /* Bloqueia clique nos outros */
+}
+
+/* 3. O item DESTAQUE (Aquele que o tutorial está explicando) */
+body.tutorial-active .nav-item.tutorial-highlight {
+    opacity: 1 !important; /* Totalmente visível */
+    filter: grayscale(0%) !important;
+    background: rgba(47, 129, 247, 0.15) !important; /* Fundo azulado */
+    border: 1px solid var(--primary); /* Borda azul */
+    box-shadow: 0 0 15px var(--primary-glow); /* Brilho neon */
+    transform: scale(1.05) translateX(5px); /* Um leve zoom e pulo para direita */
+    z-index: 10001; /* Fica acima dos outros */
+    color: var(--primary) !important;
+    font-weight: 700;
+}
+
+/* Ajuste para celular */
+@media (max-width: 1100px) {
+    #tutorialBubble {
+        left: 15px; right: 15px; width: auto; bottom: 20px;
+    }
+    /* No celular a sidebar some, então removemos o efeito de transparência para não bugar quando abrir o menu */
+    body.tutorial-active .nav-item { opacity: 1; }
+    body.tutorial-active .nav-item.tutorial-highlight { transform: none; box-shadow: none; border: 1px solid var(--primary); }
+}
     </style>
 </head>
 <body>
@@ -704,14 +759,14 @@
             <span class="brand-text">CAPITALIS <span style="color: var(--primary); font-weight: 300;">SOLUTION</span></span>
         </div>
         <nav class="nav-menu">
-            <div class="nav-item active" onclick="switchView('finance', this)"><i class="bi bi-cash-coin"></i>Gestão de gastos</div>
+            <div class="nav-item active" onclick="switchView('finance', this)"><i class="bi bi-cash-coin"></i>Gerenciador de gastos</div>
             <div class="nav-item" onclick="switchView('income', this)"><i class="bi bi-graph-up-arrow"></i>Minha renda</div>
             <div class="nav-item" onclick="switchView('invest', this)"><i class="bi bi-rocket-takeoff"></i>Investimentos</div>
             
-            <div class="nav-item" onclick="switchView('assets', this)"><i class="bi bi-bank"></i>Patrimônio e dívidas</div>
+            <div class="nav-item" onclick="switchView('assets', this)"><i class="bi bi-bank"></i>Patrimônio e empréstimos</div>
             <div class="nav-item" onclick="switchView('strategy', this)"><i class="bi bi-clipboard-data"></i>Estratégia e metas</div>
-            <div class="nav-item" onclick="switchView('tools', this)"><i class="bi bi-terminal"></i>Terminal de pagamentos</div>
-            <div class="nav-item" onclick="switchView('logs', this)"><i class="bi bi-hdd-network"></i>Logs e sistema</div>
+            <div class="nav-item" onclick="switchView('tools', this)"><i class="bi bi-terminal"></i>Assistente de pagamento</div>
+            <div class="nav-item" onclick="switchView('logs', this)"><i class="bi bi-hdd-network"></i>Logs e restauração</div>
         </nav>
         <div onclick="logout()" class="btn-logout"><i class="bi bi-box-arrow-right"></i>Encerrar sistema</div>
     </aside>
@@ -1739,78 +1794,148 @@
         } 
     });
     const Tutorial = {
-        currentStep: 0,
-        init: () => {
-            if (StorageManager.load('capitalis_tutorial_version') !== APP_VERSION) {
-                document.body.classList.add('tutorial-active');
-                document.getElementById('tutorialBubble').style.display = 'flex';
-                document.getElementById('adLockOverlay').style.display = 'none';
-                Tutorial.showStep(0);
-                return true; 
+    currentStep: 0,
+    
+    init: () => {
+        if (StorageManager.load('capitalis_tutorial_version') !== APP_VERSION) {
+            document.body.classList.add('tutorial-active');
+            // Garante que a sidebar esteja visível no desktop para ver o efeito
+            if(window.innerWidth > 1100) {
+                document.getElementById('mainSidebar').style.zIndex = "10002"; // Garante sidebar acima de tudo
             }
-            return false; 
-        },
-        showStep: (stepIndex) => {
-            Tutorial.currentStep = stepIndex;
-            const container = document.getElementById('tutorialContent');
-            const session = JSON.parse(sessionStorage.getItem('capitalis_session')) || {name: 'Usuário'};
-            const userName = session.name.split(' ')[0];
-            let html = ''; let viewToSwitch = '';
-
-            switch(stepIndex) {
-                case 0: 
-                    html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>, seja bem-vindo ao painel financeiro da Capitalis Solution. Vamos fazer um tour pelo aplicativo?</p>`; 
-                    break;
-                case 1: viewToSwitch = 'finance'; html = `<div class="tutorial-header"><h2><i class="bi bi-cash-coin"></i> Gestão de Gastos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Nessa aba você poderá controlar seus gastos, extratos completos de despesas e muito mais!</p>`; break;
-                case 2: viewToSwitch = 'income'; html = `<div class="tutorial-header"><h2><i class="bi bi-graph-up-arrow"></i> Minha Renda</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Você pode adicionar novas rendas, com acompanhamentos por gráficos, com soma de todos os meses trabalhados.</p>`; break;
-                case 3: viewToSwitch = 'invest'; html = `<div class="tutorial-header"><h2><i class="bi bi-rocket-takeoff"></i> Investimentos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Acesse a aba de investimento para monitorar sua carteira de ativos e reservas financeiras.</p>`; break;
-                case 4: viewToSwitch = 'assets'; html = `<div class="tutorial-header"><h2><i class="bi bi-bank"></i> Patrimônio</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Em Patrimônio, você tem a visão global de bens duráveis e o controle de empréstimos ativos.</p>`; break;
-                case 5: viewToSwitch = 'strategy'; html = `<div class="tutorial-header"><h2><i class="bi bi-clipboard-data"></i> Estratégia</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Defina metas de sobra mensal e organize a prioridade de pagamentos.</p>`; break;
-                case 6: viewToSwitch = 'tools'; html = `<div class="tutorial-header"><h2><i class="bi bi-terminal"></i> Terminal Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div><p style="color:var(--text-muted); font-size:0.9rem;">Interaja com o Assistente Virtual para automação de processos financeiros.</p>`; break;
-                case 7: 
-                    viewToSwitch = 'logs'; 
-                    html = `<div class="tutorial-header"><h2 style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill"></i> ATENÇÃO MÁXIMA</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
-                    <p style="font-size:0.9rem; margin-bottom:10px;"><strong>LEIA COM ATENÇÃO:</strong></p>
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">Este aplicativo funciona 100% offline. <strong>NÓS NÃO TEMOS ACESSO AOS SEUS DADOS</strong>.</p>
-                    <p style="font-size:0.85rem; background:rgba(248, 81, 73, 0.1); border:1px solid var(--danger); padding:10px; border-radius:8px; color:var(--danger); font-weight:700;">
-                    É de sua TOTAL RESPONSABILIDADE realizar backups regulares (Botão "Backup JSON"). Se você limpar o cache do navegador ou perder o dispositivo sem ter o arquivo de backup, SEUS DADOS SERÃO PERDIDOS PARA SEMPRE.</p>`; 
-                    break;
-                case 8: 
-                    html = `<div class="tutorial-header"><h2><i class="bi bi-shield-check"></i> Finalização</h2></div>
-                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">Para começar a usar o Capitalis com segurança, por favor leia nossos Termos de Uso e Política de Privacidade.</p>
-                    <div style="font-size:0.75rem; text-align:center; opacity:0.7; margin-bottom: 10px;"></div>`; 
-                    break;
-            }
-            if(viewToSwitch) { switchView(viewToSwitch); }
-            let dots = '<div class="step-dots">'; for(let i=0; i<=8; i++) dots += `<div class="step-dot ${i === stepIndex ? 'active' : ''}"></div>`; dots += '</div>';
-
-            let btn = stepIndex === 8 
-                ? `<button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="Tutorial.openTerms()">Ler Termos de Uso</button>` 
-                : `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="flex:1; background:rgba(255,255,255,0.1);" onclick="Tutorial.skip()">Pular</button><button class="btn btn-primary" style="flex:1" onclick="Tutorial.showStep(${stepIndex + 1})">Próximo</button></div>`;
-
-            container.innerHTML = html + dots + btn;
-        },
-        skip: () => { 
-            if(confirm("Caso concorde em pular o tutorial, você irá aceitar os termos de política e privacidade do usuário.\n\nDeseja mesmo continuar?")) {
-                Tutorial.acceptTerms(); 
-            }
-        },
-        openTerms: () => {
-            document.getElementById('termsModal').style.display = 'flex';
-        },
-        acceptTerms: () => {
-            document.getElementById('termsModal').style.display = 'none';
-            Tutorial.finish();
-        },
-        finish: () => { 
-            StorageManager.save('capitalis_tutorial_version', APP_VERSION); 
-            document.getElementById('tutorialBubble').style.display = 'none'; 
-            document.body.classList.remove('tutorial-active');
-            switchView('finance', document.querySelector(`.nav-item[onclick*="'finance'"]`)); 
-            AdSystem.checkAccess();
-            Updates.init();
+            setTimeout(() => Tutorial.showStep(0), 100);
+            return true; 
         }
-    };
+        return false; 
+    },
+
+    // Função auxiliar para destacar o botão na navbar
+    highlightItem: (viewName) => {
+        // 1. Remove destaque de todos
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.remove('tutorial-highlight');
+        });
+
+        // 2. Se não tiver view (ex: passo inicial ou final), retorna
+        if(!viewName) return;
+
+        // 3. Procura o botão que tem o onclick para essa view
+        // Ex: procura por onclick="switchView('finance'...
+        const target = document.querySelector(`.nav-item[onclick*="'${viewName}'"]`);
+        
+        // 4. Se achar, aplica a classe mágica do CSS
+        if(target) {
+            target.classList.add('tutorial-highlight');
+        }
+    },
+
+    showStep: (stepIndex) => {
+        Tutorial.currentStep = stepIndex;
+        const container = document.getElementById('tutorialContent');
+        const session = JSON.parse(sessionStorage.getItem('capitalis_session')) || {name: 'Usuário'};
+        const userName = session.name.split(' ')[0];
+
+        let html = '';
+        let viewToSwitch = ''; // Qual tela vamos mostrar no fundo?
+
+        switch(stepIndex) {
+            case 0: 
+                // Passo 0: Boas vindas (Sem destaque na navbar, ou destaque na Logo se quiser)
+                html = `<div class="tutorial-header"><h2><i class="bi bi-robot"></i> Assistente Capitalis</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Olá <strong>${userName}</strong>! Note que sua barra de navegação está focada. Vou te guiar por cada item dela agora.</p>`; 
+                break;
+
+            case 1: 
+                viewToSwitch = 'finance'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-cash-coin"></i> Gestão de Gastos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Veja ao lado o item <strong>Gestão de Gastos</strong> destacado. Aqui você controla suas despesas do dia a dia.</p>`;
+                break;
+
+            case 2: 
+                viewToSwitch = 'income'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-graph-up-arrow"></i> Minha Renda</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Agora o foco é na sua renda. Adicione salários e recebimentos nesta aba.</p>`; 
+                break;
+
+            case 3: 
+                viewToSwitch = 'invest'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-rocket-takeoff"></i> Investimentos</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Nesta seção, você controla suas aplicações financeiras e reservas.</p>`; 
+                break;
+
+            case 4: 
+                viewToSwitch = 'assets'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-bank"></i> Patrimônio</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Gerencie seus bens (Carros, Imóveis) e monitore seus empréstimos ativos.</p>`; 
+                break;
+
+            case 5: 
+                viewToSwitch = 'strategy'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-clipboard-data"></i> Estratégia</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Defina metas e visualize a distribuição dos seus gastos.</p>`; 
+                break;
+
+            case 6: 
+                viewToSwitch = 'tools'; 
+                html = `<div class="tutorial-header"><h2><i class="bi bi-terminal"></i> Terminal</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">Automatize lançamentos usando comandos de texto no Terminal.</p>`; 
+                break;
+
+            case 7: 
+                viewToSwitch = 'logs'; 
+                html = `<div class="tutorial-header"><h2 style="color:var(--danger)"><i class="bi bi-exclamation-triangle-fill"></i> Sistema</h2><button class="close-tutorial" onclick="Tutorial.skip()"><i class="bi bi-x-lg"></i></button></div>
+                        <p style="font-size:0.9rem;"><strong>MUITO IMPORTANTE:</strong></p>
+                        <p style="color:var(--text-muted); font-size:0.85rem;">Seus dados são salvos apenas no seu celular. Use esta aba para fazer <strong>BACKUP</strong> regularmente.</p>`; 
+                break;
+
+            case 8: 
+                // Passo final - Limpa os destaques
+                html = `<div class="tutorial-header"><h2><i class="bi bi-shield-check"></i> Finalização</h2></div>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">Agora você conhece todo o sistema! Leia os termos para começar.</p>`; 
+                break;
+        }
+
+        // 1. Muda a tela de fundo para o usuário ver o conteúdo
+        if(viewToSwitch) { switchView(viewToSwitch); }
+
+        // 2. Aplica o efeito de Destaque na Navbar
+        // Se estiver no passo 8 (final) ou 0 (inicio), não destaca nada específico, ou limpa
+        Tutorial.highlightItem(viewToSwitch);
+
+        // 3. Renderiza botões
+        let dots = '<div class="step-dots">'; 
+        for(let i=0; i<=8; i++) dots += `<div class="step-dot ${i === stepIndex ? 'active' : ''}"></div>`; 
+        dots += '</div>';
+
+        let btn = stepIndex === 8 
+            ? `<button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="Tutorial.openTerms()">Ler Termos de Uso</button>` 
+            : `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn" style="flex:1; background:rgba(255,255,255,0.1);" onclick="Tutorial.skip()">Pular</button><button class="btn btn-primary" style="flex:1" onclick="Tutorial.showStep(${stepIndex + 1})">Próximo</button></div>`;
+
+        container.innerHTML = html + dots + btn;
+        document.getElementById('tutorialBubble').style.display = 'flex';
+    },
+
+    skip: () => { 
+        if(confirm("Pular tutorial?")) { Tutorial.acceptTerms(); }
+    },
+    openTerms: () => { document.getElementById('termsModal').style.display = 'flex'; },
+    acceptTerms: () => {
+        document.getElementById('termsModal').style.display = 'none';
+        Tutorial.finish();
+    },
+    finish: () => { 
+        StorageManager.save('capitalis_tutorial_version', APP_VERSION); 
+        document.getElementById('tutorialBubble').style.display = 'none'; 
+        document.body.classList.remove('tutorial-active');
+        
+        // Remove qualquer destaque restante e restaura a opacidade
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('tutorial-highlight'));
+        
+        switchView('finance', document.querySelector(`.nav-item[onclick*="'finance'"]`)); 
+        AdSystem.checkAccess();
+        Updates.init();
+    }
+};
    const Invest = {
         getData: () => StorageManager.load('capitalis_investments') || [],
         getReserve: () => {
@@ -2931,7 +3056,48 @@
         if (key) return map[key];
         return '🧾';
     }
-    function switchView(v, el) { document.querySelectorAll('.view-section').forEach(x => x.classList.remove('active-view')); document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); document.getElementById('view-'+v).classList.add('active-view'); if(el) el.classList.add('active'); if(v==='income') renderIncome(); if(v==='finance') renderFinance(); if(v==='logs') renderLogs(); if(v==='assets') Assets.render(); if(v==='strategy') { renderStrategy(); Debts.checkNotifications(); } if(v==='invest') Invest.render(); if(window.innerWidth < 1100) toggleSidebar(); }
+    function switchView(v, el) {
+    document.querySelectorAll('.view-section').forEach(x => x.classList.remove('active-view'));
+    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+    const viewSection = document.getElementById('view-'+v);
+    if(viewSection) viewSection.classList.add('active-view');
+    if(el) {
+        el.classList.add('active');
+    } else {
+        const autoBtn = document.querySelector(`.nav-item[onclick*="'${v}'"]`);
+        if(autoBtn) autoBtn.classList.add('active');
+    }
+    const pageTitles = {
+        'finance':  'Gerenciador de gastos',
+        'income':   'Minha renda',
+        'invest':   'Investimentos',
+        'assets':   'Patrimônio e empréstimos',
+        'strategy': 'Estratégia e metas',
+        'tools':    'Assistente de pagamento',
+        'logs':     'Logs e restauração'
+    };
+
+    const headerTitle = document.querySelector('.header-left h1');
+    
+    if(headerTitle && pageTitles[v]) {
+        headerTitle.style.opacity = 0;
+        setTimeout(() => {
+            headerTitle.innerHTML = pageTitles[v];
+            headerTitle.style.opacity = 1;
+            headerTitle.style.transition = "opacity 0.3s ease";
+        }, 150);
+    }
+    if(v === 'income') renderIncome();
+    if(v === 'finance') renderFinance();
+    if(v === 'logs') renderLogs();
+    if(v === 'assets') Assets.render();
+    if(v === 'strategy') { renderStrategy(); Debts.checkNotifications(); }
+    if(v === 'invest') Invest.render();
+    if(window.innerWidth < 1100) {
+        const s = document.getElementById('mainSidebar');
+        if(s.classList.contains('open')) toggleSidebar();
+    }
+}
     function toggleSidebar() { const s = document.getElementById('mainSidebar'); s.classList.toggle('open'); document.getElementById('sidebarOverlay').style.display = s.classList.contains('open') ? 'block' : 'none'; }
     function openAddTransaction() { document.getElementById('transactionModal').style.display = 'flex'; }
     function openAddIncome() { document.getElementById('incDate').value = new Date().toISOString().slice(0,10); document.getElementById('incomeModal').style.display = 'flex'; }
